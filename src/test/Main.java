@@ -14,8 +14,7 @@ public class Main {
 		RedditAPI api = new RedditAPI("O4_S_-j1vdVw8Q", "", 
 				"http://start.byethost31.com/leethan2theece/");
 		
-		Library library = new Library(api.fetchData(10));
-		System.out.println(library.getSongs().get(0).url);
-		
+		Library library = new Library(api.fetchData(100));
+
 	}
 }

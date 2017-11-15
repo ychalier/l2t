@@ -1,5 +1,6 @@
 package data;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Matcher;
@@ -8,10 +9,14 @@ import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import scrapper.YoutubeAPI;
+
 public class Song {
 	
-	public static final String PATTERN_TITLE_FULL    = "(.*) --? (.*) \\[(.*)\\] ?\\((.*)\\)";
-	public static final String PATTERN_TITLE_NO_YEAR = "(.*) --? (.*) \\[(.*)\\]";
+	public static final String DOMAIN_FILTER = "youtube.com;youtu.be";
+	
+	private static final String PATTERN_TITLE_FULL    = "(.*) --? (.*) \\[(.*)\\] ?\\((.*)\\)";
+	private static final String PATTERN_TITLE_NO_YEAR = "(.*) --? (.*) \\[(.*)\\]";
 	
 	// Id
 	public String id;
@@ -38,19 +43,33 @@ public class Song {
 	public URL url;
 	public URL thumbnail;
 		
-	public Song(JSONObject json) throws JSONException {
+	public Song(JSONObject json) throws JSONException, IOException {
 		id              = json.getString("id");
 		ups             = json.getInt("ups");
 		downs           = json.getInt("downs");
 		nRedditComments = json.getInt("num_comments");
 		domain          = json.getString("domain");
+		
 		try {
 			url         = new URL(json.getString("url"));
 			thumbnail   = new URL(json.getString("thumbnail"));
 		} catch (MalformedURLException e) {
 			// e.printStackTrace();
 		}
+		
 		parseTitle(json.getString("title"));
+		
+		if (domain.equals("youtube.com") || domain.equals("youtu.be")) {
+			JSONObject statistics = YoutubeAPI.getStatistics(this);
+			if(statistics != null) {
+				views = statistics.getInt("viewCount");
+				nExtComments = statistics.getInt("commentCount");
+				likes = statistics.getInt("likeCount");
+				dislikes = statistics.getInt("dislikeCount");
+			}
+		}
+		
+		if (!DOMAIN_FILTER.contains(domain)) artist = null;
 	}
 		
 	private void parseTitle(String title) {

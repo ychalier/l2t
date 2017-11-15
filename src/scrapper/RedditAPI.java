@@ -69,6 +69,7 @@ public class RedditAPI {
 		int nIterations = amount / MAX_LIMIT + 1;
 		JSONArray[] posts = new JSONArray[nIterations];
 		
+		System.out.print("Fetching Reddit posts...");
 		for(int i=0; i<nIterations; i++) {
 			int limit = MAX_LIMIT;
 			if (amount - i*MAX_LIMIT < MAX_LIMIT)
@@ -78,6 +79,7 @@ public class RedditAPI {
 			after = container.getString("after");
 			posts[i] = container.getJSONArray("children");
 		}
+		System.out.println(" Done.");
 		
 		return concatArray(posts);
 	}
