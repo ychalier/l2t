@@ -10,7 +10,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class Connection {
 	
-	public static final String USER_AGENT = "Mozilla/5.0";
+	private static final String USER_AGENT = "Mozilla/5.0";
 	
 	private URL url;
 	private HttpsURLConnection con;

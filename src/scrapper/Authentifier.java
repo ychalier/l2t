@@ -1,9 +1,6 @@
 package scrapper;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,15 +11,17 @@ import java.util.Scanner;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import data.JSONHandler;
+
 public class Authentifier {
 	
-	public static final String URL_CODE_RETRIEVAL        = "https://www.reddit.com/api/v1/authorize?client_id=CLIENT_ID&response_type=code&state=SEED&redirect_uri=REDIRECT_URI&duration=permanent&scope=read";
-	public static final String URL_TOKEN_RETRIEVAL       = "https://www.reddit.com/api/v1/access_token";
+	private static final String URL_CODE_RETRIEVAL        = "https://www.reddit.com/api/v1/authorize?client_id=CLIENT_ID&response_type=code&state=SEED&redirect_uri=REDIRECT_URI&duration=permanent&scope=read";
+	private static final String URL_TOKEN_RETRIEVAL       = "https://www.reddit.com/api/v1/access_token";
 	
-	public static final String POST_PARAMETERS_RETRIEVAL = "grant_type=authorization_code&code=CODE&redirect_uri=REDIRECT_URI";
-	public static final String POST_PARAMETERS_REFRESH   = "grant_type=refresh_token&refresh_token=TOKEN";
+	private static final String POST_PARAMETERS_RETRIEVAL = "grant_type=authorization_code&code=CODE&redirect_uri=REDIRECT_URI";
+	private static final String POST_PARAMETERS_REFRESH   = "grant_type=refresh_token&refresh_token=TOKEN";
 	
-	public static final String FILE_TOKEN  = "token.json";
+	private static final String FILE_TOKEN  = "token.json";
 	
 	private RedditAPI  api;
 	
@@ -54,7 +53,7 @@ public class Authentifier {
 	}
 	
 	private String getAuthHeader() {
-		String auth = api.getClientId() + ":" + api.getClientSecret();
+		String auth = api.getClientId() + ":";
 		byte[] encodedAuth = Base64.getEncoder().encode(
 				auth.getBytes(Charset.forName("US-ASCII"))
 				);
@@ -74,11 +73,7 @@ public class Authentifier {
 	}
 	
 	private void saveToken() throws IOException, JSONException {
-		if (masterToken != null) {
-			FileWriter out = new FileWriter(FILE_TOKEN);
-			out.write(masterToken.toString());
-			out.close();
-		}
+		if (masterToken != null) JSONHandler.save(masterToken, FILE_TOKEN);
 	}
 	
 	private JSONObject getTokenRetrievalResponse(String parameters)
@@ -102,15 +97,7 @@ public class Authentifier {
 	}
 	
 	private void loadToken() throws IOException, JSONException {
-		BufferedReader in = new BufferedReader(
-				new FileReader(new File(FILE_TOKEN)));
-		String line;
-		StringBuffer buffer = new StringBuffer();
-		while ((line = in.readLine()) != null) {
-			buffer.append(line);
-		}
-		in.close();
-		masterToken = new JSONObject(buffer.toString());
+		masterToken = JSONHandler.load(FILE_TOKEN);
 	}
 	
 	public String getToken() throws JSONException {

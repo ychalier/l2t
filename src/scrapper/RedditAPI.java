@@ -8,29 +8,23 @@ import org.json.JSONObject;
 
 public class RedditAPI {
 	
-	public static final String URL_JSON = "https://oauth.reddit.com/r/SUBREDDIT/new.json?limit=LIMIT&after=AFTER";
-	public static final int MAX_LIMIT = 100;
+	private static final String URL_JSON = "https://oauth.reddit.com/r/SUBREDDIT/new.json?limit=LIMIT&after=AFTER";
+	private static final int MAX_LIMIT = 100;
 	
 	private String client_id;
-	private String client_secret;
 	private String redirect_uri;
 	
 	private Authentifier authentifier;
 	
-	public RedditAPI(String client_id, String client_secret, String redirect_uri) 
+	public RedditAPI(String client_id, String redirect_uri) 
 			throws IOException, JSONException {
 		this.client_id = client_id;
-		this.client_secret = client_secret;
 		this.redirect_uri = redirect_uri;
 		authentifier = new Authentifier(this);
 	}
 	
 	public String getClientId() {
 		return client_id;
-	}
-	
-	public String getClientSecret() {
-		return client_secret;
 	}
 	
 	public String getRedirectUri() {
@@ -44,9 +38,11 @@ public class RedditAPI {
 	private JSONArray concatArray(JSONArray... arrs) throws JSONException {
 	    JSONArray result = new JSONArray();
 	    for (JSONArray arr : arrs) {
-	        for (int i = 0; i < arr.length(); i++) {
-	            result.put(arr.get(i));
-	        }
+	    	if (arr != null) {
+	    		for (int i = 0; i < arr.length(); i++) {
+		            result.put(arr.get(i));
+		        }
+	    	}
 	    }
 	    return result;
 	}
@@ -76,8 +72,12 @@ public class RedditAPI {
 				limit = amount - i*MAX_LIMIT;
 			JSONObject container = fetchJSON("listentothis", limit, after)
 					.getJSONObject("data");
-			after = container.getString("after");
 			posts[i] = container.getJSONArray("children");
+			try {
+				after = container.getString("after");
+			} catch (org.json.JSONException e) {
+				break;
+			}
 		}
 		System.out.println(" Done.");
 		
