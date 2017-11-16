@@ -19,6 +19,8 @@ public class Main {
 		*/
 		
 		Library library = new Library(JSONHandler.load("library.json"));
+		library.computeScores();
+		library.sortByFame();
 		System.out.println(library);
 		
 	}

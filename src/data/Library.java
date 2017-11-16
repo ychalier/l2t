@@ -10,9 +10,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import score.Jury;
+
 public class Library {
 	
 	private ArrayList<Song> songs;
+	private Jury jury;
 	
 	public Library(JSONArray posts) throws JSONException, IOException {
 		songs = new ArrayList<Song>();
@@ -22,6 +25,7 @@ public class Library {
 			if (song.artist != null)
 				songs.add(song);
 		}
+		jury = new Jury(this);
 		System.out.println(" Done.");
 	}
 	
@@ -29,6 +33,7 @@ public class Library {
 		songs = new ArrayList<Song>();
 		JSONArray array = json.getJSONArray("list");
 		for(int i=0; i<array.length(); i++) songs.add(new Song(array.getJSONObject(i), 0));
+		jury = new Jury(this);
 	}
 	
 	public ArrayList<Song> getSongs(){
@@ -43,6 +48,32 @@ public class Library {
 			repartition.put(song.domain, repartition.get(song.domain) + 1);
 		}
 		return repartition;
+	}
+	
+	public Map<String, Integer> getGenraRepartition() {
+		Map<String, Integer> repartition = new HashMap<String, Integer>();
+		for(Song song : songs) {
+			if (!repartition.containsKey(song.genra))
+				repartition.put(song.genra, 0);
+			repartition.put(song.genra, repartition.get(song.genra) + 1);
+		}
+		return repartition;
+	}
+	
+	public void computeScores() {
+		jury.computeScores();
+	}
+	
+	public void sortByFame() {
+		songs.sort(Song.fameComparator());
+	}
+	
+	public void sortByQuality() {
+		songs.sort(Song.qualityComparator());
+	}
+	
+	public void sort(){
+		songs.sort(Song.meanComparator());
 	}
 	
 	public String toString() {
