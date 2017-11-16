@@ -167,14 +167,12 @@ public class Song {
 	
 	public static Comparator<Song> fameComparator() {
 		return new Comparator<Song>() {
-
 			@Override
 			public int compare(Song arg0, Song arg1) {
 				if (arg0.fame > arg1.fame) return -1;
 				if (arg0.fame < arg1.fame) return  1;
 				return 0;
 			}
-			
 		};
 	}
 	
