@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <title>Leethan 2 Theece</title>
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link href="https://fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+  </head>
+
+  <body>
+    <section class="container">
+      <h1>
+        <div class="title">Leethan 2 Theece</div>
+      </h1>
+    </section>
+
+    <div class="box-center">
+      <div class="box searchbar">
+        <input class="" type="text" placeholder="Type your request..."/>
+        <div id="search-btn" class="btn hover hover-white">search</div>
+      </div>
+    </div>
+
+    <script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.0/TweenMax.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lettering.js/0.7.0/jquery.lettering.min.js"></script>
+
+    <script>
+
+      $(document).ready(function() {
+        $(".title").lettering();
+      });
+
+      function animation() {
+        var title1 = new TimelineMax();
+        title1.staggerFromTo(".title span", 0.5,
+        {ease: Back.easeOut.config(1.7), opacity: 0, bottom: -80},
+        {ease: Back.easeOut.config(1.7), opacity: 1, bottom: 0}, 0.05);
+      }
+
+      $(document).ready(function() {
+        animation();
+      }, 100);
+
+      function search(){
+        var query = $("input").val().replace(" ", "-");
+        window.location.href = "http://localhost:8080/search/" + query;
+      }
+
+      $(".searchbar").bind("keypress", function(e){
+        if (e.keyCode == 13){
+          search();
+        }
+      });
+
+      $("#search-btn").click(search);
+
+    </script>
+  </body>
+
+</html>

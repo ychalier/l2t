@@ -29,8 +29,11 @@ public class Authentifier {
 	private JSONObject masterToken;
 	private JSONObject secondToken;
 	
-	public Authentifier(RedditAPI api) throws IOException, JSONException {
+	public Authentifier(RedditAPI api) {
 		this.api = api;
+	}
+	
+	public void auth() throws IOException, JSONException {
 		if (!new File(FILE_TOKEN).exists())
 			retrieveToken();
 		else
