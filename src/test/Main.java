@@ -18,12 +18,12 @@ public class Main {
 		RedditAPI api = new RedditAPI("O4_S_-j1vdVw8Q", 
 				"http://start.byethost31.com/leethan2theece/");
 		
-		/*
+		
 		Library library = new Library(api.fetchData(500));
 		JSONHandler.save(library.toJSON(), "library.json");
-		*/
 		
-		Library library = new Library(JSONHandler.load("library.json"));
+		
+		/*Library*/ library = new Library(JSONHandler.load("library.json"));
 		library.computeScores();
 		
 		Model model = new Model(api, library);

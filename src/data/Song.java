@@ -83,7 +83,7 @@ public class Song {
 		
 		if ((matchs = Regex.parseAll(Regex.PATTERN_TITLE_FULL, title)) == null)
 			matchs  = Regex.parseAll(Regex.PATTERN_TITLE_NO_YEAR, title);
-		
+		if (matchs == null) return;
 		this.artist = matchs.get(1);
 		this.title  = matchs.get(2);
 		this.genra  = matchs.get(3);
@@ -92,6 +92,7 @@ public class Song {
 	}
 	
 	private void parseGenra(String genraString) {
+		if (genraString == null) return;
 		String[] split = genraString.toLowerCase().replace("?", "").split("/|,");
 		genras = new ArrayList<Genra>();
 		for(int i=0; i<split.length; i++) genras.add(new Genra(split[i]));
