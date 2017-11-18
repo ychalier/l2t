@@ -5,25 +5,24 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Server  {
-		
-	private Map<String, View> router;
+	
+	public static final String STATIC_DIR   = "web/";
+	public static final String STATIC_FILES = "(.css|.js|.ico)";
+	
+	private int port;
+	private Router router;
 	private ServerSocket server;
 	
-	public Server(int port) throws IOException {
+	public Server(int port, Router router) throws IOException {
+		this.port  = port;
 		this.server = new ServerSocket(port);
-	}
-	
-	public void setRouter(Map<String, View> router) {
 		this.router = router;
 	}
 
 	public void run() throws Exception {
-	    System.out.println("Listening for connection on port 8080 ....");
+	    System.out.println("Listening for connection on port " + port + " ...");
 	    while (true){
 	    	Socket clientSocket = server.accept();
 	    	BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -35,20 +34,17 @@ public class Server  {
 	    }
 	}
 	
-	private String applyPattern(String patternString, String target) {
-		Pattern pattern = Pattern.compile(patternString);
-		Matcher matcher = pattern.matcher(target);
-		if(matcher.find()) return matcher.group(1);
-		return null;
-	}
-	
 	private String getResponse(String request) throws IOException {
 		
-		String route = applyPattern("GET ([a-zA-Z0-9-\\/]+)", request);
+		View view = router.findView(request);
+		if (view != null)
+			return view.getResponse();
 		
-		if (router.containsKey(route))
-			return router.get(route).getResponse(request);
-		return "404 Page not found";
+		return get404Response();
+	}
+	
+	private String get404Response() {
+		return "<!DOCTYPE html><html>Error 404: page not found.</html>";
 	}
 
 }

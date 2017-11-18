@@ -11,7 +11,7 @@ import java.util.Scanner;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import data.JSONHandler;
+import tools.JSONHandler;
 
 public class Authentifier {
 	

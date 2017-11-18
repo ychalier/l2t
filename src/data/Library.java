@@ -17,6 +17,7 @@ public class Library {
 	private ArrayList<Song> songs;
 	private Jury jury;
 	
+	
 	public Library(JSONArray posts) throws JSONException, IOException {
 		songs = new ArrayList<Song>();
 		System.out.print("Building library...");
@@ -29,6 +30,7 @@ public class Library {
 		System.out.println(" Done.");
 	}
 	
+	
 	public Library(JSONObject json) throws JSONException, MalformedURLException {
 		songs = new ArrayList<Song>();
 		JSONArray array = json.getJSONArray("list");
@@ -36,9 +38,11 @@ public class Library {
 		jury = new Jury(this);
 	}
 	
+	
 	public ArrayList<Song> getSongs(){
 		return songs;
 	}
+	
 	
 	public Map<String, Integer> getDomainRepartition() {
 		Map<String, Integer> repartition = new HashMap<String, Integer>();
@@ -50,6 +54,7 @@ public class Library {
 		return repartition;
 	}
 	
+	
 	public Map<String, Integer> getGenraRepartition() {
 		Map<String, Integer> repartition = new HashMap<String, Integer>();
 		for(Song song : songs) {
@@ -60,21 +65,16 @@ public class Library {
 		return repartition;
 	}
 	
+	
 	public void computeScores() {
 		jury.computeScores();
 	}
 	
-	public void sortByFame() {
-		songs.sort(Song.fameComparator());
-	}
-	
-	public void sortByQuality() {
-		songs.sort(Song.qualityComparator());
-	}
 	
 	public void sort(){
-		songs.sort(Song.meanComparator());
+		songs.sort(Song.comparator());
 	}
+	
 	
 	public String toString() {
 		StringBuffer out = new StringBuffer();
@@ -87,12 +87,29 @@ public class Library {
 		return out.toString();
 	}
 	
+	
 	public JSONObject toJSON() throws JSONException {
 		JSONArray array = new JSONArray();
 		for(Song song : songs) array.put(song.toJSON());
 		JSONObject json = new JSONObject();
 		json.put("list", array);
 		return json;
+	}
+	
+	
+	public ArrayList<Song> search(String query){
+		Genra genra = new Genra(query);
+		ArrayList<Song> results = new ArrayList<Song>();
+		for(Song song: songs) {
+			for(Genra g: song.genras) {
+				if(g.main.equals(genra.main)) {
+					results.add(song);
+					break;
+				}
+			}
+		}
+		results.sort(Song.comparator());
+		return results;
 	}
 	
 }

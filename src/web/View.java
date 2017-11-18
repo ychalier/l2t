@@ -3,24 +3,58 @@ package web;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 public class View {
 	
-	private String template;
-	
-	public View(String template) {
-		this.template = template;
-	}
+	private final String         template;
+	private final TemplateEngine engine;
+	private final Model          model;
 
-	public String getResponse(String route) throws IOException {
-		
-		BufferedReader reader = new BufferedReader(new FileReader(template));
+	private List<String>   hierarchy;
+	private String[]       query;
+	
+	
+	public View(String filename, Model model, TemplateEngine engine) throws IOException {
+		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		String line;
 		StringBuffer buffer = new StringBuffer();
 		while ((line = reader.readLine()) != null) buffer.append(line);
 		reader.close();
-		
-		return buffer.toString();
+		this.template = buffer.toString();
+		this.engine   = engine;
+		this.model    = model;
+	}
+	
+	
+	public String getTemplate() {
+		return template;
+	}
+	
+	
+	public String[] getQuery(){
+		return query;
+	}
+	
+	
+	public Model getModel() {
+		return model;
+	}
+	
+	
+	public List<String> getHierarchy(){
+		return hierarchy;
+	}
+	
+	
+	public void setRequest(List<String> hierarchy, String[] query) {
+		this.hierarchy  = hierarchy;
+		this.query = query;
+	}
+	
+
+	public String getResponse() throws IOException {
+		return engine.process(this);
 	}
 	
 }

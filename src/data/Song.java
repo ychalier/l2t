@@ -3,23 +3,19 @@ package data;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import scrapper.YoutubeAPI;
+import scrapper.YouTubeAPI;
+import tools.Regex;
 
 public class Song {
 	
 	public static final String DOMAIN_FILTER = "youtube.com;youtu.be";
 	
-	private static final String PATTERN_TITLE_FULL    = "(.*) --? (.*) \\[(.*)\\] ?\\((.*)\\)";
-	private static final String PATTERN_TITLE_NO_YEAR = "(.*) --? (.*) \\[(.*)\\]";
-	
-	private static final int WEIGHT_FAME = 1;
-	private static final int WEIGHT_QUALITY = 10;
+	private static final int WEIGHT_FAME    = 2;
+	private static final int WEIGHT_QUALITY = 1;
 	
 	// Id
 	public String id;
@@ -65,7 +61,7 @@ public class Song {
 		parseGenra(genra);
 		
 		if (domain.equals("youtube.com") || domain.equals("youtu.be")) {
-			JSONObject statistics = YoutubeAPI.getStatistics(this);
+			JSONObject statistics = YouTubeAPI.getStatistics(this);
 			if(statistics != null) {
 				try {
 					views = statistics.getInt("viewCount");
@@ -82,22 +78,17 @@ public class Song {
 	}
 		
 	private void parseTitle(String title) {
-		Pattern pattern = Pattern.compile(PATTERN_TITLE_FULL);
-		Matcher matcher = pattern.matcher(title);
-		if (matcher.find()) {
-			this.artist = matcher.group(1);
-			this.title  = matcher.group(2);
-			this.genra  = matcher.group(3);
-			this.year   = matcher.group(4);
-		} else {
-			pattern = Pattern.compile(PATTERN_TITLE_NO_YEAR);
-			matcher = pattern.matcher(title);
-			if (matcher.find()) {
-				this.artist = matcher.group(1);
-				this.title  = matcher.group(2);
-				this.genra  = matcher.group(3);
-			}
-		}
+		
+		List<String> matchs;
+		
+		if ((matchs = Regex.parseAll(Regex.PATTERN_TITLE_FULL, title)) == null)
+			matchs  = Regex.parseAll(Regex.PATTERN_TITLE_NO_YEAR, title);
+		
+		this.artist = matchs.get(1);
+		this.title  = matchs.get(2);
+		this.genra  = matchs.get(3);
+		if (matchs.size() > 4) this.year = matchs.get(4);
+		
 	}
 	
 	private void parseGenra(String genraString) {
@@ -162,34 +153,10 @@ public class Song {
 	}
 	
 	public double meanScore() {
-		return (WEIGHT_FAME*fame + WEIGHT_QUALITY*quality) / 2;
+		return (WEIGHT_FAME * fame + WEIGHT_QUALITY * quality) / 2;
 	}
 	
-	public static Comparator<Song> fameComparator() {
-		return new Comparator<Song>() {
-			@Override
-			public int compare(Song arg0, Song arg1) {
-				if (arg0.fame > arg1.fame) return -1;
-				if (arg0.fame < arg1.fame) return  1;
-				return 0;
-			}
-		};
-	}
-	
-	public static Comparator<Song> qualityComparator() {
-		return new Comparator<Song>() {
-
-			@Override
-			public int compare(Song arg0, Song arg1) {
-				if (arg0.quality > arg1.quality) return -1;
-				if (arg0.quality < arg1.quality) return  1;
-				return 0;
-			}
-			
-		};
-	}
-	
-	public static Comparator<Song> meanComparator() {
+	public static Comparator<Song> comparator() {
 		return new Comparator<Song>() {
 
 			@Override
