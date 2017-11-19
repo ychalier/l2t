@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <title>Leethan 2 Theece</title>
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link href="https://fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <section class="container">
+      <h1>
+        <div class="title">Leethan 2 Theece</div>
+      </h1>
+    </section>
+
+    <div id="player"></div>
+
+    <div class="box-center">
+      <div class="box" id="player-info">
+        <div class="box-title">
+          <span id="song-artist"></span> - <i><span id="song-title"></span></i> <span class="space"></span> [<span id="song-index"></span>/<span id="song-max"></span>]
+        </div>
+        <hr>
+        <div class="box-title">
+          <span id="song-prev" class="btn fa fa-step-backward"></span> <span class="space"></span> <span id="song-play" class="btn fa fa-play"></span> <span class="space"></span> <span id="song-next" class="btn fa fa-step-forward"></span>
+          <div id="progression-bar"><div id="progression"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.0/TweenMax.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lettering.js/0.7.0/jquery.lettering.min.js"></script>
+
+    <script>
+
+      $(document).ready(function() {
+        $(".title").lettering();
+      });
+      function animation() {
+        var title1 = new TimelineMax();
+        title1.staggerFromTo(".title span", 0.5,
+        {ease: Back.easeOut.config(1.7), opacity: 0, bottom: -80},
+        {ease: Back.easeOut.config(1.7), opacity: 1, bottom: 0}, 0.05);
+      }
+      $(document).ready(function() {
+        animation();
+      }, 100);
+
+      var data  = [PLAYLIST_DATA];
+      var index =  0;
+      var state = -1;
+
+      var tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      var player;
+      var playerEventTarget;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+          height: '0',
+          width: '0',
+          videoId: data[0][0],
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+        });
+      }
+
+      var duration = 0;
+      var tStart   = 0;
+      var tStopped = 0;
+      var tElapsed = 0;
+
+      function onPlayerReady(event) {
+        playerEventTarget = event.target;
+        loadSong(event.target);
+      }
+
+      function onPlayerStateChange(event) {
+        state = event.data;
+        if (state == 0) {
+          loadSong(event.target, index);
+        }
+        if (state == 1){
+          $("#song-play").removeClass("fa-play");
+          $("#song-play").addClass("fa-pause");
+          getDuration();
+          tStart = new Date().getTime() / 1000;
+        } else {
+          $("#song-play").removeClass("fa-pause");
+          $("#song-play").addClass("fa-play");
+          tStopped = tElapsed;
+        }
+      }
+      function stopVideo() {
+        player.stopVideo();
+      }
+
+      function loadSong(player){
+        if (index >= 0 && index < data.length){
+          player.cueVideoById({'videoId': data[index][0]});
+          player.playVideo();
+          $("#song-artist").html(data[index][1]);
+          $("#song-title").html(data[index][2]);
+          $("#song-index").html(index + 1);
+          $("#song-max").html(data.length);
+          tStart   = 0;
+          tStopped = 0;
+          tElapsed = 0;
+          $("#progression").css("width", "0%");
+          index++;
+        }
+      }
+
+      $("#song-prev").click(function(event){
+        index -= 2;
+        loadSong(loadSong(playerEventTarget));
+      });
+      $("#song-next").click(function(event){
+        loadSong(loadSong(playerEventTarget));
+      });
+      $("#song-play").click(function(event){
+        if (state == 1)
+          playerEventTarget.pauseVideo();
+        else
+          playerEventTarget.playVideo();
+      });
+
+      function getDuration(){
+        duration = playerEventTarget.getDuration();
+      }
+
+      setInterval(function(){
+        if (state == 1 && duration != null && duration > 0){
+          tElapsed = tStopped + (new Date().getTime() / 1000) - tStart;
+          var percent = parseInt(100 * tElapsed / duration);
+          $("#progression").css("width", percent.toString() + "%");
+        }
+      }, 1000);
+
+    </script>
+  </body>
+
+</html>

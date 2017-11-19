@@ -60,6 +60,7 @@ public class Main {
 				);
 		*/
 		
+		/*
 		router.addView("^search/([a-zA-Z0-9-]+)$", 
 				new View("web/index.html",
 						model,
@@ -80,6 +81,30 @@ public class Main {
 											+ "</tr>");
 								
 								return view.getTemplate().replace("PLACEHOLDER", builder.toString());
+							}
+			
+						}
+					)
+				);
+		*/
+		
+		router.addView("^search/([a-zA-Z0-9-]+)$", 
+				new View("web/playlist.html",
+						model,
+						new TemplateEngine() {
+
+							@Override
+							public String process(View view) {
+								String query = view.getHierarchy().get(1);
+								StringBuilder builder = new StringBuilder();
+								for(Song song:view.getModel().getSearchEngine().search(query))
+									builder.append("["
+											+ "\"" + YouTubeAPI.getVideoId(song) + "\", "
+											+ "\"" + song.artist + "\", "
+											+ "\"" + song.title + "\""
+													+ "],");
+								builder.setCharAt(builder.length()-1, '\n');
+								return view.getTemplate().replace("PLAYLIST_DATA", builder.toString());
 							}
 			
 						}

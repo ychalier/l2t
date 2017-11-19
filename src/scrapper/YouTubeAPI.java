@@ -22,9 +22,7 @@ public class YouTubeAPI {
 	public static JSONObject getStatistics(Song song) throws JSONException, IOException {
 		
 		// Parsing video id
-		String videoId = null;
-		if(song.domain.equals("youtube.com")) videoId = Regex.parse(Regex.PATTERN_VIDEO_ID_COM, song.url);
-		if(song.domain.equals("youtu.be"))    videoId = Regex.parse(Regex.PATTERN_VIDEO_ID_BE,  song.url);
+		String videoId = getVideoId(song);
 		if (videoId == null) return null;
 		
 		// Getting response from YouTube
@@ -40,5 +38,12 @@ public class YouTubeAPI {
 			}
 		}
 		return null;
+	}
+	
+	public static String getVideoId(Song song) {
+		String videoId = null;
+		if(song.domain.equals("youtube.com")) videoId = Regex.parse(Regex.PATTERN_VIDEO_ID_COM, song.url);
+		if(song.domain.equals("youtu.be"))    videoId = Regex.parse(Regex.PATTERN_VIDEO_ID_BE,  song.url);
+		return videoId;
 	}
 }

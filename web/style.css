@@ -107,3 +107,38 @@ input{
 .btn{
 	cursor: pointer;
 }
+
+/*** PLAYLIST ***/
+
+iframe{
+	position: absolute;
+	opacity: 0;
+}
+
+hr{
+	border-color: #FFF;
+}
+
+#player-info{
+	min-width: 440px;
+}
+
+.space{
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+#progression-bar{
+	background: #000;
+	border: 1px solid #FFF;
+	display: inline-block;
+	width: 70%;
+	margin: 0 0 -3px 20px;
+}
+
+#progression{
+	background: #FFF;
+	padding: 10px 0 10px 0;
+	width: 0%;
+	transition: 2s linear;
+}

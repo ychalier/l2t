@@ -1,10 +1,12 @@
 package web;
 
+import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URI;
 
 public class Server  {
 	
@@ -15,13 +17,23 @@ public class Server  {
 	private Router router;
 	private ServerSocket server;
 	
+	
 	public Server(int port, Router router) throws IOException {
-		this.port  = port;
+		this.port   = port;
 		this.server = new ServerSocket(port);
 		this.router = router;
 	}
+	
 
 	public void run() throws Exception {
+		
+		try {
+			if (Desktop.isDesktopSupported())
+				Desktop.getDesktop().browse(new URI("http://localhost:" + port + "/"));
+		} catch (java.lang.UnsupportedOperationException e) {
+			// e.printStackTrace();
+		}
+		
 	    System.out.println("Listening for connection on port " + port + " ...");
 	    while (true){
 	    	Socket clientSocket = server.accept();
@@ -34,6 +46,7 @@ public class Server  {
 	    }
 	}
 	
+	
 	private String getResponse(String request) throws IOException {
 		
 		View view = router.findView(request);
@@ -42,6 +55,7 @@ public class Server  {
 		
 		return get404Response();
 	}
+	
 	
 	private String get404Response() {
 		return "<!DOCTYPE html><html>Error 404: page not found.</html>";

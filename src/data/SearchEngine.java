@@ -27,6 +27,11 @@ public class SearchEngine {
 	}
 	
 	
+	public ArrayList<Song> getResults(){
+		return results;
+	}
+	
+	
 	private double score(Song song) {
 		return WEIGHT_SONG_SCORE * song.meanScore()
 				+ WEIGHT_MATCH_SCORE * (double) scores.get(song);
