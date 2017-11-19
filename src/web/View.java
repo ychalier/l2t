@@ -9,13 +9,13 @@ public class View {
 	
 	private final String         template;
 	private final TemplateEngine engine;
-	private final Model          model;
+	private Model          model;
 
 	private List<String>   hierarchy;
 	private String[]       query;
 	
 	
-	public View(String filename, Model model, TemplateEngine engine) throws IOException {
+	public View(String filename, TemplateEngine engine) throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		String line;
 		StringBuffer buffer = new StringBuffer();
@@ -23,7 +23,6 @@ public class View {
 		reader.close();
 		this.template = buffer.toString();
 		this.engine   = engine;
-		this.model    = model;
 	}
 	
 	
@@ -39,6 +38,11 @@ public class View {
 	
 	public Model getModel() {
 		return model;
+	}
+	
+	
+	public void setModel(Model model) {
+		this.model = model;
 	}
 	
 	

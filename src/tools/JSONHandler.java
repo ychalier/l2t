@@ -2,6 +2,7 @@ package tools;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,8 +18,14 @@ public class JSONHandler {
 		bw.close();
 	}
 	
+	
 	public static JSONObject load(String filename) throws IOException, JSONException {
-		BufferedReader br = new BufferedReader(new FileReader(filename));
+		return load(new File(filename));
+	}
+	
+	
+	public static JSONObject load(File file) throws IOException, JSONException  {
+		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line;
 		StringBuffer sb = new StringBuffer();
 		while((line = br.readLine()) != null) sb.append(line);

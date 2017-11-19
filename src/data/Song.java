@@ -1,19 +1,27 @@
 package data;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import scrapper.YouTubeAPI;
-import tools.Regex;
+import tools.Tools;
 
+/**
+ * 
+ * Represents a song with all its relative info.
+ * By default, it is created using a JSON file.
+ * 
+ * @author Yohan Chalier
+ *
+ */
 public class Song {
 	
-	public static final String DOMAIN_FILTER = "youtube.com;youtu.be";
+	// Remove domains such as soundcloud or spotify (for now)
+	public  static final String DOMAIN_FILTER = "youtube.com;youtu.be";
 	
+	// Influences the mean score
+	// (weighted average betwwen fame and quality)
 	private static final int WEIGHT_FAME    = 2;
 	private static final int WEIGHT_QUALITY = 1;
 	
@@ -23,10 +31,10 @@ public class Song {
 	// Song tags
 	public String artist;
 	public String title;
-	public String genra;
+	public String genre;
 	public String year;
 	
-	public ArrayList<Genra> genras;
+	public ArrayList<Genre> genres;
 	
 	// Reddit ranking
 	public int ups;
@@ -47,62 +55,23 @@ public class Song {
 	// Score
 	public double fame;
 	public double quality;
-		
-	public Song(JSONObject json) throws JSONException, IOException {
-		id              = json.getString("id");
-		ups             = json.getInt("ups");
-		downs           = json.getInt("downs");
-		nRedditComments = json.getInt("num_comments");
-		domain          = json.getString("domain");
-		url             = json.getString("url");
-		thumbnail       = json.getString("thumbnail");
-		
-		parseTitle(json.getString("title"));
-		parseGenra(genra);
-		
-		if (domain.equals("youtube.com") || domain.equals("youtu.be")) {
-			JSONObject statistics = YouTubeAPI.getStatistics(this);
-			if(statistics != null) {
-				try {
-					views = statistics.getInt("viewCount");
-					nExtComments = statistics.getInt("commentCount");
-					likes = statistics.getInt("likeCount");
-					dislikes = statistics.getInt("dislikeCount");
-				} catch (org.json.JSONException e) {
-					// e.printStackTrace();
-				}
-			}
-		}
-		
-		if (!DOMAIN_FILTER.contains(domain)) artist = null;
-	}
-		
-	private void parseTitle(String title) {
-		
-		List<String> matchs;
-		
-		if ((matchs = Regex.parseAll(Regex.PATTERN_TITLE_FULL, title)) == null)
-			matchs  = Regex.parseAll(Regex.PATTERN_TITLE_NO_YEAR, title);
-		if (matchs == null) return;
-		this.artist = matchs.get(1);
-		this.title  = matchs.get(2);
-		this.genra  = matchs.get(3);
-		if (matchs.size() > 4) this.year = matchs.get(4);
-		
-	}
 	
-	private void parseGenra(String genraString) {
-		if (genraString == null) return;
-		String[] split = genraString.toLowerCase().replace("?", "").split("/|,");
-		genras = new ArrayList<Genra>();
-		for(int i=0; i<split.length; i++) genras.add(new Genra(split[i]));
-	}
 	
-	public Song(JSONObject json, int foo) throws JSONException {
+	public Song() {} // Needed for subclasses
+	
+	/**
+	 * Builds a song given a JSON object, previously
+	 * written using the toJSON method of this very
+	 * class.
+	 * 
+	 * @param json The JSONObject containing song info
+	 * @throws JSONException
+	 */
+	public Song(JSONObject json) throws JSONException {
 		id              = json.getString("id");
 		artist          = json.getString("artist");
 		title           = json.getString("title");
-		genra           = json.getString("genra");
+		genre           = json.getString("genre");
 		ups             = json.getInt("ups");
 		downs           = json.getInt("downs");
 		nRedditComments = json.getInt("nRedditComments");
@@ -114,21 +83,47 @@ public class Song {
 		url             = json.getString("url");
 		thumbnail       = json.getString("thumbnail");
 		
+		// year might have been null when creating the JSON,
+		// so it might not exists in this JSON object.
 		try {
 			year        = json.getString("year");
 		} catch (org.json.JSONException e) {
 			year        = null;
 		}
 		
-		parseGenra(genra);
+		parseGenre(genre);
 	}
 	
+	/**
+	 * Split all genres provided by the OP, and then
+	 * process them through a basic IE engine.
+	 * 
+	 * @param genreString Song genre with the following format:
+	 * 					"genre 1/genre 2" or "genre 1, genre 2"
+	 * @see Genre
+	 */
+	protected void parseGenre(String genreString) {
+		if (genreString == null) return;
+		String[] split = genreString.toLowerCase()
+				.replace("?", "")
+				.split("/|,");
+		genres = new ArrayList<Genre>();
+		for(int i=0; i<split.length; i++)
+			genres.add(new Genre(split[i]));
+	}
+		
+	/**
+	 * Creates a JSON containing all song data
+	 * 
+	 * @return The JSON object containing the song data
+	 * @throws JSONException
+	 */
 	public JSONObject toJSON() throws JSONException {
 		JSONObject json = new JSONObject();
 		json.put("id", id);
 		json.put("artist", artist);
 		json.put("title", title);
-		json.put("genra", genra);
+		json.put("genre", genre);
 		json.put("year", year);
 		json.put("ups", ups);
 		json.put("downs", downs);
@@ -143,20 +138,33 @@ public class Song {
 		return json;
 	}
 	
-	public String doubleStr(double d) {
-		if(d < 0.01 && d > 0) return "0.0-";
-		return Double.toString(d).substring(0, Math.min(4, Double.toString(d).length()));
-	}
-	
+	/**
+	 * Format:
+	 * Artist - Title [genre] (fame score/quality score)
+	 */
+	@Override
 	public String toString() {
-		return artist + " - " + title + " " + genras + " "
-				+ "(" + doubleStr(fame) + "/" + doubleStr(quality) + ")";
+		return artist + " - " + title + " " + genres + " "
+				+ "(" + Tools.doubleToStr(fame)
+				+ "/" + Tools.doubleToStr(quality) + ")";
 	}
 	
+	/**
+	 * Computes the average between the fame score
+	 * and the quality score.
+	 * 
+	 * @return the score of the song
+	 */
 	public double meanScore() {
-		return (WEIGHT_FAME * fame + WEIGHT_QUALITY * quality) / 2;
+		return ( WEIGHT_FAME * fame 
+			   + WEIGHT_QUALITY * quality
+			   ) / 2;
 	}
 	
+	/**
+	 * @return A comparator for Song, based on their socre
+	 * 		   in desc order.
+	 */
 	public static Comparator<Song> comparator() {
 		return new Comparator<Song>() {
 

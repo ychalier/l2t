@@ -11,14 +11,19 @@ import tools.Regex;
 public class Router {
 	
 	private Map<String, View> map;
+	private Model  model;
 	
-	public Router() {
+	public Router(Model model) {
+		this.model = model;
 		map = new HashMap<String, View>();
 	}
 	
+	
 	public void addView(String pattern, View view) {
+		view.setModel(model);
 		map.put(pattern, view);
 	}
+	
 	
 	public View findView(String request) throws IOException {
 		String route = Regex.parse(Regex.PATTERN_ROUTE, request);
@@ -34,7 +39,7 @@ public class Router {
 			String extension = url.substring(index);
 			if (extension.matches(Server.STATIC_FILES)) {
 				if (new File(Server.STATIC_DIR + url).exists()){
-					return new View(Server.STATIC_DIR + url, null, new StaticEngine());
+					return new View(Server.STATIC_DIR + url, new StaticEngine());
 				} else {
 					return null;
 				}
