@@ -29,7 +29,7 @@ public class Connection {
 	 * @throws IOException
 	 */
 	public Connection(String urlString) throws IOException {
-		url = new URL(urlString);
+		url = new URL(urlString.replace("http://", "https://"));
 		con = (HttpsURLConnection) url.openConnection();
 		con.setRequestProperty("User-Agent", USER_AGENT);
 	}

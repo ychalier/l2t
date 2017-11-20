@@ -6,6 +6,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import scrapper.SoundcloudAPI;
 import scrapper.YouTubeAPI;
 import tools.Regex;
 
@@ -29,6 +30,7 @@ public class PostSong extends Song {
 	 * @throws SongException 
 	 */
 	public PostSong(JSONObject json) throws SongException {
+		
 		super();
 		
 		String tmpTitle;
@@ -45,44 +47,49 @@ public class PostSong extends Song {
 			throw new SongException("invalid reddit json");
 		}
 		
+		// Domain filter
+		if (!DOMAIN_FILTER.contains(domain))
+			throw new SongException("domain unsupported: " + domain);
+		
 		// Extract artist, title, genre and year
 		parseTitle(tmpTitle);
 		
 		// Interpret the genre string found earlier
 		parseGenre(genre);
 		
-		// Fetching YouTube statistics
+		// Fetching statistics
+		JSONObject statistics = null;
 		if (domain.equals("youtube.com") || domain.equals("youtu.be")) {
-			JSONObject statistics = YouTubeAPI.getStatistics(this);
-			if(statistics != null) {
-				try {
-					// Some data might not be available.
-					// But we do not want to toss the song either,
-					// thus by default, values are at 0.
-					views        = 0;
-					nExtComments = 0;
-					likes        = 0;
-					dislikes     = 0;
-					if (statistics.has("viewCount"))
-						views = statistics.getInt("viewCount");
-					if (statistics.has("commentCount"))
-						nExtComments = statistics.getInt("commentCount");
-					if (statistics.has("likeCount"))
-						likes = statistics.getInt("likeCount");
-					if (statistics.has("dislikeCount"))
-						dislikes = statistics.getInt("dislikeCount");
-				} catch (JSONException e) {
-					e.printStackTrace();
-					throw new SongException("invalid YouTube json: " + url);
-				}
-			} else {
-				throw new SongException("no YouTube statistics found: " + url);
-			}
+			statistics = YouTubeAPI.getStatistics(this);
+		} else if (domain.equals("soundcloud.com")){
+			statistics = SoundcloudAPI.getStatistics(this);
 		}
 		
-		// For now, only youtube.com and youtu.be are supported
-		if (!DOMAIN_FILTER.contains(domain))
-			throw new SongException("domain unsupported: " + domain);
+		// Setting statistics values
+		if(statistics != null) {
+			try {
+				// Some data might not be available.
+				// But we do not want to toss the song either,
+				// thus by default, values are at 0.
+				views        = 0;
+				nExtComments = 0;
+				likes        = 0;
+				dislikes     = 0;
+				if (statistics.has("viewCount"))
+					views = statistics.getInt("viewCount");
+				if (statistics.has("commentCount"))
+					nExtComments = statistics.getInt("commentCount");
+				if (statistics.has("likeCount"))
+					likes = statistics.getInt("likeCount");
+				if (statistics.has("dislikeCount"))
+					dislikes = statistics.getInt("dislikeCount");
+			} catch (JSONException e) {
+				e.printStackTrace();
+				throw new SongException("invalid statistics json: " + url);
+			}
+		} else {
+			throw new SongException("no statistics found: " + url);
+		}
 		
 	}
 	

@@ -37,12 +37,21 @@ public class Main {
 								
 								// Format: [["YouTube ID", "Artist", "Title"], ...];
 								// Replacing char " (ASCII code 34) or it causes troubles in JS
-								for(Song song:view.getModel().getSearchEngine().search(query))
-									builder.append("["
-											+ "\"" + YouTubeAPI.getVideoId(song) + "\", "
-											+ "\"" + song.artist.replace((char) 34, '\'') + "\", "
+								for(Song song:view.getModel().getSearchEngine().search(query)){
+									
+									if (song.domain.equals("youtube.com") 
+											|| song.domain.equals("youtu.be"))
+										builder.append("[ \"yt\", "
+												+ "\"" + YouTubeAPI.getVideoId(song) + "\", ");
+									else if (song.domain.equals("soundcloud.com"))
+										builder.append("[ \"sc\", "
+												+ "\"" + song.url + "\", ");
+								
+									builder.append(
+											  "\"" + song.artist.replace((char) 34, '\'') + "\", "
 											+ "\"" + song.title.replace((char) 34, '\'') + "\""
 										    + "],");
+								}
 								
 								// Removing last comma
 								builder.setCharAt(builder.length()-1, ' ');

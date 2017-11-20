@@ -26,6 +26,8 @@ public class Regex {
 	// and what seems to be the share option on youtube.com
 	public static final String PATTERN_VIDEO_ID = "(v=|be\\/|%3Fv%3D)(.{11})";
 	
+	public static final String PATTERN_SOUNDCLOUD = "<meta property=\"soundcloud:PARAM_count\" content=\"([0-9]+)\">";
+	
 	// Handles HTTP GET requests, to remove GET and HTTP/1.1
 	public static final String PATTERN_ROUTE    = "\\/(.*) ";
 	

@@ -20,7 +20,7 @@ import tools.Tools;
 public class Song {
 	
 	// Remove domains such as Soundcloud or Spotify (for now)
-	public  static final String DOMAIN_FILTER = "youtube.com;youtu.be";
+	public  static final String DOMAIN_FILTER = "youtube.com;youtu.be;soundcloud.com";
 	
 	// Influences the mean score
 	// (weighted average between fame and quality)

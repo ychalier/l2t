@@ -139,5 +139,6 @@ hr{
 	background: #FFF;
 	padding: 10px 0 10px 0;
 	width: 0%;
+	max-width: 100%;
 	transition: 2s linear;
 }
