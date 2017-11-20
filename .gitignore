@@ -9,3 +9,6 @@
 
 # Classpath
 .classpath
+
+# Bin folder
+bin/

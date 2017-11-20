@@ -28,6 +28,8 @@ public class Regex {
 	
 	public static final String PATTERN_SOUNDCLOUD = "<meta property=\"soundcloud:PARAM_count\" content=\"([0-9]+)\">";
 	
+	public static final String PATTERN_RESOURCE = "(.*)"; /*"(jar:)?file:(.*)";*/
+	
 	// Handles HTTP GET requests, to remove GET and HTTP/1.1
 	public static final String PATTERN_ROUTE    = "\\/(.*) ";
 	

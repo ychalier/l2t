@@ -1,6 +1,5 @@
 package web;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -35,7 +34,7 @@ public class View {
 	 */
 	public View(String filename, TemplateEngine engine) throws IOException {
 		InputStreamReader reader = new InputStreamReader(
-				new FileInputStream(filename),
+				getClass().getResourceAsStream(filename),
 				StandardCharsets.UTF_8);
 		int c;
 		StringBuilder builder = new StringBuilder();

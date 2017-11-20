@@ -1,6 +1,5 @@
 package web;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -66,16 +65,18 @@ public class Router {
 		if (index != -1) {
 			String extension = url.substring(index); // Get the file extension
 			if (extension.matches(Server.STATIC_FILES)) { // If it is supported
-				if (new File(Server.STATIC_DIR + url).exists()){
-					// Uses a StaticEngine to ease programming
-					try {
-						return new View(Server.STATIC_DIR + url, new StaticEngine());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				} else {
+				
+				// Uses a StaticEngine to ease programming
+				View view = null;
+				try {
+					view = new  View(
+							Server.STATIC_DIR + url,
+							new StaticEngine());
+					return view;
+				} catch (IOException | NullPointerException e) {
 					return null;
 				}
+				
 			}
 		}
 		

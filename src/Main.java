@@ -19,7 +19,7 @@ public class Main {
 		Library library = Library.loadLibrary();
 		Model   model   = new Model(library);
 		Router  router  = new Router(model);
-		
+				
 		// Landing page
 		router.addView("^$",
 				new View(Server.TEMPLATES_DIR + "base.html",
