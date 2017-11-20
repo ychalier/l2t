@@ -1,6 +1,9 @@
 package tools;
 
+import java.awt.Desktop;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * 
@@ -35,7 +38,13 @@ public class Tools {
 		try {
 			Runtime.getRuntime().exec("xdg-open " + url);
 		} catch (IOException e) {
-			e.printStackTrace();
+			if(Desktop.isDesktopSupported()){
+			  try {
+				Desktop.getDesktop().browse(new URI(url));
+			  } catch (IOException | URISyntaxException e1) {
+				e1.printStackTrace();
+			  }
+			}
 		}
 	}
 	
