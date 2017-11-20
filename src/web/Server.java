@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import tools.Logger;
 import tools.Tools;
 
 /**
@@ -51,12 +52,14 @@ public class Server  {
 			Tools.openBrowser("http://localhost:" + PORT + "/");
 				
 	    System.out.println("Listening for connection on port " + PORT + " ...");
+	    Logger.wr("Listening for connection on port " + PORT + " ...");
 	    while (true){
 	    	// Reading incoming requests
 	    	Socket clientSocket = server.accept();
 	    	BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			String request = reader.readLine();			
-			System.out.println(request); // TODO: log request
+			System.out.println(request);
+			Logger.wr(request);
 			
 			// Preparing response
 			String httpResponse = "HTTP/1.1 200 OK\r\n\r\n" + getResponse(request);

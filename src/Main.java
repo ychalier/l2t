@@ -1,6 +1,7 @@
 import data.Library;
 import data.Song;
 import scrapper.YouTubeAPI;
+import tools.Logger;
 import web.Model;
 import web.Router;
 import web.Server;
@@ -11,6 +12,9 @@ import web.View;
 public class Main {
 
 	public static void main(String[] args) throws Exception {
+		
+		// Initialize logger
+		new Logger();
 				
 		Library library = Library.loadLibrary();
 		Model   model   = new Model(library);

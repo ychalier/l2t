@@ -6,6 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import tools.Logger;
+
 /**
  * 
  * Implements the tools required to work with Reddit.
@@ -138,6 +140,7 @@ public class RedditAPI {
 		JSONArray[] posts = new JSONArray[nIterations];
 		
 		System.out.print("Fetching Reddit posts...");
+		Logger.wr("Fetching Reddit posts...");
 		
 		for (int i = 0; i < nIterations; i++) {
 			// Wether we want all posts from the page or not
@@ -159,6 +162,7 @@ public class RedditAPI {
 			}
 		}
 		System.out.println(" Done.");
+		Logger.wr("Fetching Reddit posts done.");
 		
 		// Finally concatenate all sub-arrays
 		return concatArray(posts);

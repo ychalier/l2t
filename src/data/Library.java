@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import scrapper.RedditAPI;
 import tools.JSONHandler;
+import tools.Logger;
 import web.Server;
 
 /**
@@ -35,7 +36,8 @@ public class Library {
 	 * 				Each post pertinent data are located in ["data"]
 	 */
 	public Library(JSONArray posts) {
-		System.out.println("Building library...");
+		System.out.print("Building library...");
+		Logger.wr("Building library...");
 		// Printing new line as SongException are likely to occur
 		songs = new ArrayList<Song>();
 		
@@ -48,14 +50,14 @@ public class Library {
 					throw new SongException("invalid post json");
 				}
 			} catch (SongException e) {
-				//TODO: log those SongExceptions
-				System.out.println(e);
+				Logger.wr(e.toString());
 			}
 				
 		}
 		
 		jury = new Jury(this);
-		System.out.println("Library built.");
+		System.out.println(" Done.");
+		Logger.wr("Building library done.");
 	}
 	
 	/**
@@ -121,9 +123,11 @@ public class Library {
 	 * for each song.
 	 */
 	public void computeScores() {
+		Logger.wr("Computing scores...");
 		System.out.print("Computing scores... ");
 		jury.computeScores();
 		System.out.println("Done.");
+		Logger.wr("Computing scores done.");
 	}
 	
 	/**

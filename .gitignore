@@ -3,3 +3,6 @@
 
 # JSON data files
 *.json
+
+# Log file
+.log

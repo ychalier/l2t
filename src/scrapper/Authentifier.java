@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import tools.JSONHandler;
+import tools.Logger;
 import tools.Tools;
 import web.Model;
 import web.Router;
@@ -137,6 +138,7 @@ public class Authentifier {
 		URL url = getCodeRetrievalURL();
 		// Printing it for manual verification
 		System.out.println(url);
+		Logger.wr("Code retrieval URL: " + url);
 		// Automatically opening the browser to allow user's click
 		Tools.openBrowser(url.toString());
 		
@@ -313,9 +315,11 @@ public class Authentifier {
 	 */
 	private void refreshToken() throws IOException, JSONException {
 		System.out.print("Refreshing token... ");
+		Logger.wr("Refreshing token...");
 		secondToken = getTokenRetrievalResponse(
 				getAuthParametersRefresh());
 		System.out.println("Done.");
+		Logger.wr("Refreshing token done.");
 	}
 	
 	/**
