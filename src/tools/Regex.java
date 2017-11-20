@@ -19,7 +19,7 @@ public class Regex {
 	
 	// Handles Reddit /r/listenttothis title format.
 	// Beware of different dashes used to split artist and title
-	public static final String PATTERN_TITLE    = "(.*) (--?|—|–) (.*) ?\\[(.*)\\]";
+	public static final String PATTERN_TITLE = "([^\\[]+) (--?|—|–) ([^\\[]+) ?\\[([^\\[]+)\\]";
 	
 	// Detects YouTube video id, of length 11
 	// Adapted for youtube.com, youtu.be
