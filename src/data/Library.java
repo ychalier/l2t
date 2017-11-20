@@ -28,29 +28,34 @@ public class Library {
 	
 	/**
 	 * Builds a Library from a list of Reddit posts.
+	 * If a SongException occurs, then the song is not
+	 * added to the database.
 	 * 
 	 * @param posts The JSON array containing the posts.
 	 * 				Each post pertinent data are located in ["data"]
-	 * @throws JSONException
-	 * @throws IOException
 	 */
-	public Library(JSONArray posts) throws JSONException, IOException {
-		System.out.print("Building library...");
+	public Library(JSONArray posts) {
+		System.out.println("Building library...");
+		// Printing new line as SongException are likely to occur
 		songs = new ArrayList<Song>();
 		
 		for(int i=0; i<posts.length(); i++) {
-			Song song = new PostSong(posts.getJSONObject(i).getJSONObject("data"));
-			/*
-			 * When creating a new song, artist is set to null if
-			 * something bad happens. Then we do not count it as
-			 * a song for the library.
-			 */
-			if (song.artist != null)
-				songs.add(song);
+			
+			try {
+				try {
+					songs.add(new PostSong(posts.getJSONObject(i).getJSONObject("data")));
+				} catch (JSONException e) {
+					throw new SongException("invalid post json");
+				}
+			} catch (SongException e) {
+				//TODO: log those SongExceptions
+				System.out.println(e);
+			}
+				
 		}
 		
 		jury = new Jury(this);
-		System.out.println(" Done.");
+		System.out.println("Library built.");
 	}
 	
 	/**

@@ -1,6 +1,11 @@
 package data;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import tools.Regex;
+
 /**
  * 
  * Represents one of the genre of a song.
@@ -25,8 +30,40 @@ public class Genre {
 		}
 	}
 	
+	/**
+	 * Constructor from a previously generated JSON file
+	 * 
+	 * @param json The JSON object equivalent to toJSON
+	 * @throws JSONException
+	 */
+	public Genre(JSONObject json) throws JSONException {
+		main = json.getString("main");
+		JSONArray arr = json.getJSONArray("subs");
+		subs = new String[arr.length()];
+		for(int i = 0; i < subs.length; i++) {
+			subs[i] = arr.getString(i);
+		}
+	}
+	
+	
 	public String toString() {
 		return main;
+	}
+	
+	/**
+	 * Format: {"main": main, "subs": [sub1, ...]}
+	 * 
+	 * @return JSON containing all data from the object
+	 * @throws JSONException
+	 */
+	public JSONObject toJSON() throws JSONException {
+		JSONObject json = new JSONObject();
+		json.put("main", main);
+		JSONArray arr = new JSONArray();
+		for (int i = 0; i < subs.length; i++)
+			arr.put(subs[i]);
+		json.put("subs", arr);
+		return json;
 	}
 
 }

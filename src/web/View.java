@@ -1,27 +1,47 @@
 package web;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/**
+ * 
+ * Implements the view from the MVC schema.
+ * 
+ * Uses a template to structure the response.
+ * Uses a TemplateEngine to process this template
+ * with regards to the model.
+ * 
+ * @author Yohan Chalier
+ *
+ */
 public class View {
 	
 	private final String         template;
 	private final TemplateEngine engine;
-	private Model          model;
-
-	private List<String>   hierarchy;
-	private String[]       query;
+	private       Model          model;
+	private       List<String>   hierarchy;
+	private       String[]       query;
 	
-	
+	/**
+	 * The constructor reads the template and
+	 * stores it for future uses, as it is final.
+	 * 
+	 * @param filename
+	 * @param engine
+	 * @throws IOException
+	 */
 	public View(String filename, TemplateEngine engine) throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(filename));
-		String line;
-		StringBuffer buffer = new StringBuffer();
-		while ((line = reader.readLine()) != null) buffer.append(line);
+		InputStreamReader reader = new InputStreamReader(
+				new FileInputStream(filename),
+				StandardCharsets.UTF_8);
+		int c;
+		StringBuilder builder = new StringBuilder();
+		while ((c = reader.read()) != -1) builder.append((char) c);
 		reader.close();
-		this.template = buffer.toString();
+		this.template = builder.toString();
 		this.engine   = engine;
 	}
 	
@@ -52,11 +72,16 @@ public class View {
 	
 	
 	public void setRequest(List<String> hierarchy, String[] query) {
-		this.hierarchy  = hierarchy;
+		this.hierarchy = hierarchy;
 		this.query = query;
 	}
 	
-
+	/**
+	 * Calls the TemplateEngine to process the template.
+	 * 
+	 * @return The HTTP response given by the view
+	 * @throws IOException
+	 */
 	public String getResponse() throws IOException {
 		return engine.process(this);
 	}

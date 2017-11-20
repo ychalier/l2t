@@ -1,6 +1,6 @@
 package data;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONException;
@@ -26,44 +26,63 @@ public class PostSong extends Song {
 	 * @param json The direct element from Reddit post.
 	 * 			   Corresponds to the "data" field of an element
 	 * 			   from the JSONArray.
-	 * @throws JSONException
-	 * @throws IOException
+	 * @throws SongException 
 	 */
-	public PostSong(JSONObject json) throws JSONException, IOException {
+	public PostSong(JSONObject json) throws SongException {
 		super();
 		
-		id              = json.getString("id");
-		ups             = json.getInt("ups");
-		downs           = json.getInt("downs");
-		nRedditComments = json.getInt("num_comments");
-		domain          = json.getString("domain");
-		url             = json.getString("url");
-		thumbnail       = json.getString("thumbnail");
+		String tmpTitle;
+		try {
+			id              = json.getString("id");
+			ups             = json.getInt("ups");
+			downs           = json.getInt("downs");
+			nRedditComments = json.getInt("num_comments");
+			domain          = json.getString("domain");
+			url             = json.getString("url");
+			thumbnail       = json.getString("thumbnail");
+			tmpTitle        = json.getString("title");
+		} catch (JSONException e) {
+			throw new SongException("invalid reddit json");
+		}
 		
 		// Extract artist, title, genre and year
-		parseTitle(json.getString("title"));
+		parseTitle(tmpTitle);
 		
 		// Interpret the genre string found earlier
-		if (genre != null)
-			parseGenre(genre);
+		parseGenre(genre);
 		
 		// Fetching YouTube statistics
 		if (domain.equals("youtube.com") || domain.equals("youtu.be")) {
 			JSONObject statistics = YouTubeAPI.getStatistics(this);
 			if(statistics != null) {
 				try {
-					views = statistics.getInt("viewCount");
-					nExtComments = statistics.getInt("commentCount");
-					likes = statistics.getInt("likeCount");
-					dislikes = statistics.getInt("dislikeCount");
-				} catch (org.json.JSONException e) {
-					// e.printStackTrace();
+					// Some data might not be available.
+					// But we do not want to toss the song either,
+					// thus by default, values are at 0.
+					views        = 0;
+					nExtComments = 0;
+					likes        = 0;
+					dislikes     = 0;
+					if (statistics.has("viewCount"))
+						views = statistics.getInt("viewCount");
+					if (statistics.has("commentCount"))
+						nExtComments = statistics.getInt("commentCount");
+					if (statistics.has("likeCount"))
+						likes = statistics.getInt("likeCount");
+					if (statistics.has("dislikeCount"))
+						dislikes = statistics.getInt("dislikeCount");
+				} catch (JSONException e) {
+					e.printStackTrace();
+					throw new SongException("invalid YouTube json: " + url);
 				}
+			} else {
+				throw new SongException("no YouTube statistics found: " + url);
 			}
 		}
 		
 		// For now, only youtube.com and youtu.be are supported
-		if (!DOMAIN_FILTER.contains(domain)) artist = null;
+		if (!DOMAIN_FILTER.contains(domain))
+			throw new SongException("domain unsupported: " + domain);
 		
 	}
 	
@@ -73,23 +92,46 @@ public class PostSong extends Song {
 	 * Year is optional (null if not found).
 	 * 
 	 * @param title Reddit post title (given by OP)
+	 * @throws SongException 
 	 */
-	private void parseTitle(String title) {
+	private void parseTitle(String title) throws SongException {
+		
+		if (title == null)
+			throw new SongException("no title found");
 		
 		List<String> matchs;
 		
 		// Parsing through a regular expression
-		// Firstly trying with year, and then without if it fails
-		if ((matchs = Regex.parseAll(Regex.PATTERN_TITLE_FULL, title)) == null)
-			 matchs = Regex.parseAll(Regex.PATTERN_TITLE_NO_YEAR, title);
-		if (matchs == null) return;
+		matchs = Regex.parseAll(Regex.PATTERN_TITLE, title);
+		if (matchs == null)
+			throw new SongException("invalid title: " + title);
 		
 		this.artist = matchs.get(1);
-		this.title  = matchs.get(2);
-		this.genre  = matchs.get(3);
+		this.title  = matchs.get(3);
+		this.genre  = matchs.get(4);
 		
-		if (matchs.size() > 4) this.year = matchs.get(4);
+	}
+	
+	/**
+	 * Split all genres provided by the OP, and then
+	 * process them through a basic IE engine.
+	 * 
+	 * @param genreString Song genre with the following format:
+	 * 					"genre 1/genre 2" or "genre 1, genre 2"
+	 * @throws SongException 
+	 * @see Genre
+	 */
+	private void parseGenre(String genreString) throws SongException {
 		
+		if (genreString == null)
+			throw new SongException("genre string is null");
+		
+		String[] split = genreString.toLowerCase()
+				.replace("?", "")
+				.split("/|,");
+		genres = new ArrayList<Genre>();
+		for(int i=0; i<split.length; i++)
+			genres.add(new Genre(split[i]));
 	}
 	
 	

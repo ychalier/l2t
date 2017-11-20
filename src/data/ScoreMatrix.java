@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 /**
  * 
- * Represent a matrix used to compute score (fame or quality).
+ * Represents a matrix used to compute score (fame or quality).
  * A row corresponds to one attribute relevant for the score.
  * A column corresponds to a song.
  * 
@@ -28,6 +28,7 @@ public class ScoreMatrix {
 	 * 			   from a song for the score computation
 	 */
 	public ScoreMatrix(ArrayList<Song> songs, Function<Song, int[]> func) {
+		// Building the matrix
 		n = func.apply(songs.get(0)).length; // Number of rows
 		m = songs.size();					 // Number of columns
 		matrix = new double[n][m];
@@ -35,7 +36,11 @@ public class ScoreMatrix {
 			int[] attrs = func.apply(songs.get(j));
 			for(int i=0; i<n; i++) matrix[i][j] = (double) attrs[i];
 		}
+		
+		// Centering and reducing
 		normalize();
+		
+		// Computing average
 		computeScore();
 	}
 	

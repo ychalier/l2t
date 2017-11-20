@@ -2,6 +2,8 @@ package data;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,11 +19,11 @@ import tools.Tools;
  */
 public class Song {
 	
-	// Remove domains such as soundcloud or spotify (for now)
+	// Remove domains such as Soundcloud or Spotify (for now)
 	public  static final String DOMAIN_FILTER = "youtube.com;youtu.be";
 	
 	// Influences the mean score
-	// (weighted average betwwen fame and quality)
+	// (weighted average between fame and quality)
 	private static final int WEIGHT_FAME    = 2;
 	private static final int WEIGHT_QUALITY = 1;
 	
@@ -32,7 +34,6 @@ public class Song {
 	public String artist;
 	public String title;
 	public String genre;
-	public String year;
 	
 	public ArrayList<Genre> genres;
 	
@@ -83,33 +84,11 @@ public class Song {
 		url             = json.getString("url");
 		thumbnail       = json.getString("thumbnail");
 		
-		// year might have been null when creating the JSON,
-		// so it might not exists in this JSON object.
-		try {
-			year        = json.getString("year");
-		} catch (org.json.JSONException e) {
-			year        = null;
-		}
-		
-		parseGenre(genre);
-	}
-	
-	/**
-	 * Split all genres provided by the OP, and then
-	 * process them through a basic IE engine.
-	 * 
-	 * @param genreString Song genre with the following format:
-	 * 					"genre 1/genre 2" or "genre 1, genre 2"
-	 * @see Genre
-	 */
-	protected void parseGenre(String genreString) {
-		if (genreString == null) return;
-		String[] split = genreString.toLowerCase()
-				.replace("?", "")
-				.split("/|,");
+		JSONArray arr = json.getJSONArray("genres");
 		genres = new ArrayList<Genre>();
-		for(int i=0; i<split.length; i++)
-			genres.add(new Genre(split[i]));
+		for (int i = 0; i < arr.length(); i++) {
+			genres.add(new Genre(arr.getJSONObject(i)));
+		}
 	}
 		
 	/**
@@ -124,7 +103,6 @@ public class Song {
 		json.put("artist", artist);
 		json.put("title", title);
 		json.put("genre", genre);
-		json.put("year", year);
 		json.put("ups", ups);
 		json.put("downs", downs);
 		json.put("nRedditComments", nRedditComments);
@@ -135,6 +113,10 @@ public class Song {
 		json.put("domain", domain);
 		json.put("url", url);
 		json.put("thumbnail", thumbnail);
+		JSONArray arr = new JSONArray();
+		for (Genre genre : genres)
+			arr.put(genre.toJSON());
+		json.put("genres", arr);
 		return json;
 	}
 	
@@ -162,16 +144,18 @@ public class Song {
 	}
 	
 	/**
-	 * @return A comparator for Song, based on their socre
-	 * 		   in desc order.
+	 * @return A comparator for Song, based on their score
+	 * 		   in decreasing order.
 	 */
 	public static Comparator<Song> comparator() {
 		return new Comparator<Song>() {
 
 			@Override
 			public int compare(Song arg0, Song arg1) {
-				if (arg0.meanScore() > arg1.meanScore()) return -1;
-				if (arg0.meanScore() < arg1.meanScore()) return  1;
+				if (arg0.meanScore() > arg1.meanScore())
+					return -1;
+				if (arg0.meanScore() < arg1.meanScore())
+					return  1;
 				return 0;
 			}
 			

@@ -8,8 +8,7 @@ import org.json.JSONObject;
 
 /**
  * 
- * Implements the tools required to work
- * with Reddit.
+ * Implements the tools required to work with Reddit.
  * Doc at {@link https://www.reddit.com/dev/api}
  * 
  * @author Yohan Chalier
@@ -17,9 +16,12 @@ import org.json.JSONObject;
  */
 public class RedditAPI {
 	
+	// Default Reddit application parameters
 	public  static final String DEFAULT_CLIENT_ID    = "O4_S_-j1vdVw8Q";
 	public  static final String DEFAULT_REDIRECT_URI = "http://localhost:PORT/authorize";
-	public  static final int    DEFAULT_FETCH_AMOUNT = 500;
+	
+	// Default amount of posts fetched for a new library
+	public  static final int    DEFAULT_FETCH_AMOUNT = 900;
 
 	private static final String URL_JSON  = "https://oauth.reddit.com/r/SUBREDDIT/new.json?limit=LIMIT&after=AFTER";
 	private static final int    MAX_LIMIT = 100;
