@@ -1,3 +1,7 @@
+html{
+	overflow: hidden;
+}
+
 body {
 	font-family: 'Fjalla One', sans-serif;
 	background: white;
@@ -112,6 +116,8 @@ input{
 iframe{
 	position: absolute;
 	opacity: 0;
+	top: 100vh;
+	left: 100vw;
 }
 
 hr{

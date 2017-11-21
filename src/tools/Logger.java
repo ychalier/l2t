@@ -12,18 +12,21 @@ public class Logger {
 	
 	private static File logfile;
 	
-	public Logger() {
-		logfile = new File(".log");
+	public Logger(boolean log) {
+		if (log)
+			logfile = new File(".log");
 	}
 	
 	public static void wr(String msg) {
-		FileWriter writer;
-		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-		try {
-			writer = new FileWriter(logfile, true);
-			writer.write(SDF.format(timestamp) + ": " + msg + "\n");
-			writer.close();
-		} catch (IOException e) {}
+		if (logfile != null) {
+			FileWriter writer;
+			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+			try {
+				writer = new FileWriter(logfile, true);
+				writer.write(SDF.format(timestamp) + ": " + msg + "\n");
+				writer.close();
+			} catch (IOException e) {}
+		}
 	}
 
 }

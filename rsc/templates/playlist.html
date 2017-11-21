@@ -21,7 +21,7 @@
 
     <div id="yt-player"></div>
 
-    <iframe id="sc-player" width="1%" height="1" scrolling="no" frameborder="no"
+    <iframe id="sc-player" width="100%" height="100" scrolling="no" frameborder="no"
       src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&amp">
     </iframe>
 
@@ -42,186 +42,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.0/TweenMax.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lettering.js/0.7.0/jquery.lettering.min.js"></script>
 
-    <script src="https://w.soundcloud.com/player/api.js"></script>
+    <script src="/soundcloud.js"></script>
+    <script src="/title.js"></script>
 
-    <script>
+    <script>var data = [PLAYLIST_DATA]</script>
 
-      $(document).ready(function() {
-        $(".title").lettering();
-      });
-      function animation() {
-        var title1 = new TimelineMax();
-        title1.staggerFromTo(".title span", 0.5,
-        {ease: Back.easeOut.config(1.7), opacity: 0, bottom: -80},
-        {ease: Back.easeOut.config(1.7), opacity: 1, bottom: 0}, 0.05);
-      }
-      $(document).ready(function() {
-        animation();
-      }, 100);
+    <script async src="/player.js"></script>
 
-
-
-
-
-      var data  = [PLAYLIST_DATA];
-      var index =  0;
-      var state = -1;
-
-
-      var nPlayers = 2;
-      var nPlayersReady = 0;
-
-
-      var duration = 0;
-      var tStart   = 0;
-      var tStopped = 0;
-      var tElapsed = 0;
-
-
-      var scPlayer = SC.Widget('sc-player');
-      scPlayer.bind(SC.Widget.Events.READY, function(event){
-        nPlayersReady++;
-      });
-      scPlayer.bind(SC.Widget.Events.PLAY, function(event){
-        state = 1;
-        playPlayer();
-      });
-      scPlayer.bind(SC.Widget.Events.PAUSE, function(event){
-        state = 2;
-        pausePlayer();
-      });
-      scPlayer.bind(SC.Widget.Events.FINISH, function(event){
-        state = 0;
-        loadSong();
-      });
-
-
-      var tag = document.createElement('script');
-      tag.src = "https://www.youtube.com/iframe_api";
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-      var ytPlayer;
-      var ytPlayerTmp;
-      function onYouTubeIframeAPIReady() {
-        ytPlayerTmp = new YT.Player('yt-player', {
-          height: '0',
-          width: '0',
-          videoId: data[0][0],
-          events: {
-            'onReady': onYtPlayerReady,
-            'onStateChange': onYtPlayerStateChange
-          }
-        });
-      }
-      function onYtPlayerReady(event) {
-        ytPlayer = event.target;
-        nPlayersReady++;
-      }
-      function onYtPlayerStateChange(event) {
-        state = event.data;
-        if (state == 0) {
-          loadSong();
-        }
-        if (state == 1){
-          playPlayer();
-          getDuration();
-        } else {
-          pausePlayer();
-        }
-      }
-
-      function pausePlayer(){
-        $("#song-play").removeClass("fa-pause");
-        $("#song-play").addClass("fa-play");
-        tStopped = tElapsed;
-      }
-
-      function playPlayer(){
-        $("#song-play").removeClass("fa-play");
-        $("#song-play").addClass("fa-pause");
-        tStart = new Date().getTime() / 1000;
-      }
-
-      function loadSong(){
-
-        if (nPlayersReady < nPlayers){
-          setTimeout(loadSong, 100);
-        }
-        else if (index >= 0 && index < data.length){
-
-          ytPlayer.stopVideo();
-          scPlayer.pause();
-
-          if (data[index][0] == "yt"){
-            ytPlayer.cueVideoById({'videoId': data[index][1]});
-            ytPlayer.playVideo();
-          } else if (data[index][0] == "sc"){
-            scPlayer.load(data[index][1]);
-            scPlayer.bind(SC.Widget.Events.READY, function(event){
-              scPlayer.play();
-              scPlayer.getDuration(function(d){
-                duration = d / 1000;
-              })
-            });
-          }
-
-          $("#song-artist").html(data[index][2]);
-          $("#song-title").html(data[index][3]);
-          $("#song-index").html(index + 1);
-          $("#song-max").html(data.length);
-
-          tStart   = 0;
-          tStopped = 0;
-          tElapsed = 0;
-          $("#progression").css("width", "0%");
-
-          index++;
-        }
-      }
-
-      loadSong();
-
-      $("#song-prev").click(function(event){
-        if (index >= 2){
-          index -= 2;
-          loadSong();
-        }
-      });
-      $("#song-next").click(function(event){
-        if (index < data.length){
-          loadSong();
-        }
-      });
-      $("#song-play").click(function(event){
-        if (state == 1){
-          if (data[index-1][0] == "yt"){
-            ytPlayer.pauseVideo();
-          } else if (data[index-1][0] == "sc"){
-            scPlayer.pause();
-          }
-        } else if (state == 2) {
-          if (data[index-1][0] == "yt"){
-            ytPlayer.playVideo();
-          } else if (data[index-1][0] == "sc"){
-            scPlayer.play();
-          }
-        }
-
-      });
-
-      function getDuration(){
-        duration = ytPlayer.getDuration();
-      }
-
-      setInterval(function(){
-        if (state == 1 && duration != null && duration > 0){
-          tElapsed = tStopped + (new Date().getTime() / 1000) - tStart;
-          var percent = parseInt(100 * tElapsed / duration);
-          $("#progression").css("width", percent.toString() + "%");
-        }
-      }, 1000);
-
-    </script>
   </body>
 
 </html>
