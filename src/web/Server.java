@@ -46,19 +46,22 @@ public class Server  {
 	 * @param closeOnRequest Should the server close after receiving a request
 	 * @throws Exception
 	 */
-	public void run(boolean openBrowser, boolean closeOnRequest) throws Exception {
+	public void run(boolean openBrowser, boolean closeOnRequest, boolean verbose) throws Exception {
 		
 		if (openBrowser)
 			Tools.openBrowser("http://localhost:" + PORT + "/");
-				
-	    System.out.println("Listening for connection on port " + PORT + " ...");
+		
+		if (verbose)
+			System.out.println("Listening for connection on port " + PORT + " ...");
+		
 	    Logger.wr("Listening for connection on port " + PORT + " ...");
 	    while (true){
 	    	// Reading incoming requests
 	    	Socket clientSocket = server.accept();
 	    	BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			String request = reader.readLine();			
-			System.out.println(request);
+			String request = reader.readLine();	
+			if (verbose)
+				System.out.println(request);
 			Logger.wr(request);
 			
 			// Preparing response

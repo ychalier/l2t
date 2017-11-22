@@ -70,6 +70,26 @@
       }, 100);
 
     </script>
+    
+    <script>
+    
+    	function httpGetAsync(){
+    		var url = "http://localhost:8080/ask";
+		    var xmlHttp = new XMLHttpRequest();
+		    xmlHttp.onreadystatechange = function() { 
+		        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+		        	if (xmlHttp.responseText == "ACK")
+		        		window.location.href = "http://localhost:8080/";
+		        }
+		    }
+		    xmlHttp.open("GET", url, true);
+		    xmlHttp.send(null);
+		}
+		
+		setInterval(httpGetAsync, 1000);
+    
+    </script>
+    
   </body>
 
 </html>

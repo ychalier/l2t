@@ -17,6 +17,7 @@ import tools.Tools;
 import web.Model;
 import web.Router;
 import web.Server;
+import web.StaticEngine;
 import web.TemplateEngine;
 import web.View;
 
@@ -55,6 +56,8 @@ public class Authentifier {
 	private JSONObject secondToken;
 	private Server     server;
 	
+	private boolean    newAuth = false;
+	
 	/**
 	 * The code is stored as its validation is asynchronous.
 	 * @param api The Reddit API to link to.
@@ -77,6 +80,7 @@ public class Authentifier {
 	public void auth() throws Exception {
 		if (!new File(FILE_TOKEN).exists())
 			if (code == null) {
+				newAuth = true;
 				retrieveCodeServerOut();
 				return;
 			}
@@ -85,6 +89,38 @@ public class Authentifier {
 		else 
 			loadToken();
 		refreshToken();
+		
+		if (!newAuth) {
+			
+			new Thread(new Runnable(){
+
+				@Override
+				public void run() {
+					
+					String url = "http://localhost:" + Server.PORT + "/wait";
+					
+					// Automatically opening the browser to allow user's click
+					Tools.openBrowser(url);
+					
+					// Creating dummy server parameters
+					Model model = new Model(null);
+					Router router = new Router(model);
+					
+					// Adding a view for the redirect_uri
+					try {
+						router.addView("^wait$", new View(
+								Server.TEMPLATES_DIR + "wait.html",
+								new StaticEngine()));
+						server = new Server(router);
+						server.run(false, true, false);
+					} catch (Exception e) {}
+					
+				}
+				
+			}).start();
+			
+		}
+		
 	}
 	
 	/**
@@ -188,7 +224,7 @@ public class Authentifier {
 		
 		// Creating and starting the server
 		server = new Server(router);
-		server.run(false, true);
+		server.run(false, true, true);
 	}
 	
 	/**

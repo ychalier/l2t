@@ -150,10 +150,12 @@ public class Library {
 	 * @return A new library.
 	 * @throws Exception
 	 */
-	public static Library loadLibrary() throws Exception {
+	public static Object[] loadLibrary() throws Exception {
 		Library library;
+		Boolean newLibrary;
 		if (new File(FILE_LIBRARY).exists()) {
 			library = new Library(new File(FILE_LIBRARY));
+			newLibrary = new Boolean(false);
 		} else {
 			// Create the Reddit API
 			RedditAPI api = new RedditAPI(RedditAPI.DEFAULT_CLIENT_ID, 
@@ -168,9 +170,10 @@ public class Library {
 			
 			// Save library has JSON
 			JSONHandler.save(library.toJSON(), FILE_LIBRARY);
+			newLibrary = new Boolean(true);
 		}
 		library.computeScores();
-		return library;
+		return new Object[] {library, newLibrary};
 	}
 	
 }

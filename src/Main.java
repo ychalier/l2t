@@ -33,10 +33,12 @@ public class Main {
 		
 		// Initialize logger
 		new Logger(log);
-				
-		Library library = Library.loadLibrary();
-		Model   model   = new Model(library);
-		Router  router  = new Router(model);
+			
+		Object[] objs      = Library.loadLibrary();
+		Library library    = (Library) objs[0];
+		Boolean newLibrary = (Boolean) objs[1];
+		Model   model      = new Model(library);
+		Router  router     = new Router(model);
 				
 		// Landing page
 		router.addView("^$",
@@ -168,10 +170,23 @@ public class Main {
 					}
 				));
 		
+		router.addView("^ask$", new View(Server.TEMPLATES_DIR + "wait.html",
+				new TemplateEngine() {
+
+					@Override
+					public String process(View view) {
+						return "ACK";
+					}
+			
+				}
+			));
+		
 		Server server = new Server(router);
-		server.run(true, false);
 		
-		System.out.println(library.getGenres());
-		
+		if (newLibrary.booleanValue())
+			server.run(false, false, true);
+		else
+			server.run(true, false, true);
+				
 	}
 }
