@@ -5,7 +5,7 @@ package data;
  * Used to log errors occurring during the 
  * information extraction of a song.
  * 
- * @author devyss
+ * @author Yohan Chalier
  *
  */
 @SuppressWarnings("serial")

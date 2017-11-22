@@ -11,9 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import scrapper.RedditAPI;
+import tools.Config;
 import tools.JSONHandler;
 import tools.Logger;
-import web.Server;
 
 /**
  * 
@@ -23,9 +23,7 @@ import web.Server;
  *
  */
 public class Library {
-		
-	private static final String FILE_LIBRARY = "library.json";
-	
+			
 	private ArrayList<Song> songs;
 	private Jury jury;
 	
@@ -153,23 +151,23 @@ public class Library {
 	public static Object[] loadLibrary() throws Exception {
 		Library library;
 		Boolean newLibrary;
-		if (new File(FILE_LIBRARY).exists()) {
-			library = new Library(new File(FILE_LIBRARY));
+		if (new File(Config.FILE_LIBRARY).exists()) {
+			library = new Library(new File(Config.FILE_LIBRARY));
 			newLibrary = new Boolean(false);
 		} else {
 			// Create the Reddit API
 			RedditAPI api = new RedditAPI(RedditAPI.DEFAULT_CLIENT_ID, 
 					RedditAPI.DEFAULT_REDIRECT_URI
-					.replace("PORT", Integer.toString(Server.PORT)));
+					.replace("PORT", Integer.toString(Config.PORT)));
 			
 			// Retrieve or refresh token
 			api.auth();
 			
 			// Fetch data and build library
-			library = new Library(api.fetchData(RedditAPI.DEFAULT_FETCH_AMOUNT));
+			library = new Library(api.fetchData(Config.FETCH_AMOUNT));
 			
 			// Save library has JSON
-			JSONHandler.save(library.toJSON(), FILE_LIBRARY);
+			JSONHandler.save(library.toJSON(), Config.FILE_LIBRARY);
 			newLibrary = new Boolean(true);
 		}
 		library.computeScores();

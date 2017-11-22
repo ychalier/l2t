@@ -8,6 +8,8 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import tools.Config;
+
 /***
  * 
  * Implements tools to send and received HTTP requests.
@@ -16,9 +18,7 @@ import javax.net.ssl.HttpsURLConnection;
  *
  */
 public class Connection {
-	
-	private static final String USER_AGENT = "Mozilla/5.0";
-	
+		
 	private URL url;
 	private HttpsURLConnection con;
 	
@@ -31,7 +31,7 @@ public class Connection {
 	public Connection(String urlString) throws IOException {
 		url = new URL(urlString.replace("http://", "https://"));
 		con = (HttpsURLConnection) url.openConnection();
-		con.setRequestProperty("User-Agent", USER_AGENT);
+		con.setRequestProperty("User-Agent", Config.USER_AGENT);
 	}
 	
 	/**

@@ -1,14 +1,10 @@
 package data;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import tools.Config;
 import tools.Regex;
 
 /**
@@ -23,56 +19,6 @@ public class Genre {
 	public String   main;
 	public String[] subs;
 	
-	private static Map<String, List<String>> correspondences;
-	static {
-		correspondences = new HashMap<String, List<String>>();
-		
-		correspondences.put("hiphop", 
-				Arrays.asList(new String[] {"hip-hop", "hip hop"}));
-		
-		correspondences.put("chillhop", 
-				Arrays.asList(new String[] {"chill hop"}));
-		
-		correspondences.put("rnb", 
-				Arrays.asList(new String[] {"r&b"}));
-		
-		correspondences.put("rock&roll", 
-				Arrays.asList(new String[] {"rock'n'roll"}));
-		
-		correspondences.put("electro", 
-				Arrays.asList(new String[] {"electronica", "electronic", "electonic"}));
-		
-		correspondences.put("psychedelic", 
-				Arrays.asList(new String[] {"psych"}));
-		
-		correspondences.put("alternative", 
-				Arrays.asList(new String[] {"alt"}));
-		
-		correspondences.put("acapella", 
-				Arrays.asList(new String[] {"cappella"}));
-		
-		correspondences.put("chill", 
-				Arrays.asList(new String[] {"chillout", "chillwave", "downtempo", "ambient"}));
-		
-		correspondences.put("pop electro", 
-				Arrays.asList(new String[] {"electopop", "electropop"}));
-		
-		correspondences.put("punk electro", 
-				Arrays.asList(new String[] {"electropunk"}));
-		
-		correspondences.put("rock electro", 
-				Arrays.asList(new String[] {"electrorock"}));
-		
-		correspondences.put("edm", 
-				Arrays.asList(new String[] {"idm"}));
-		
-		correspondences.put("indie", 
-				Arrays.asList(new String[] {"indi"}));
-		
-		correspondences.put("jazz", 
-				Arrays.asList(new String[] {"jazzhop"}));
-	}
-	
 	public Genre(String genra) {
 		// Removing spaces before and after the string
 		String genraNoSpace = Regex.parse(Regex.PATTERN_SPACES, genra
@@ -80,8 +26,8 @@ public class Genre {
 				.replace("&amp;", "&"));
 		
 		if (genraNoSpace != null) { // The string should be well formatted then
-			for (String main: correspondences.keySet())
-				for (String sub: correspondences.get(main))
+			for (String main: Config.correspondences.keySet())
+				for (String sub: Config.correspondences.get(main))
 					genraNoSpace = genraNoSpace.replace(sub, main);
 			String[] split = genraNoSpace.split(" |-");
 			main = split[split.length-1];      // Main word in English is at the end

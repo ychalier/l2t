@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import tools.Config;
+
 /**
  * 
  * Implements a search engine to handle
@@ -19,11 +21,6 @@ import java.util.Set;
  *
  */
 public class SearchEngine {
-	
-	private static final int    MATCH_SCORE_MAIN   = 3;
-	private static final int    MATCH_SCORE_SUBS   = 1;
-	private static final double WEIGHT_SONG_SCORE  = 1;
-	private static final double WEIGHT_MATCH_SCORE = 1;
 	
 	private final Library library;
 	
@@ -49,8 +46,8 @@ public class SearchEngine {
 	 * @return The score of the song for the query
 	 */
 	private double score(Song song) {
-		return WEIGHT_SONG_SCORE * song.meanScore()
-				+ WEIGHT_MATCH_SCORE * (double) scores.get(song);
+		return Config.WEIGHT_SONG_SCORE * song.meanScore()
+				+ Config.WEIGHT_MATCH_SCORE * (double) scores.get(song);
 	}
 	
 	/**
@@ -94,7 +91,7 @@ public class SearchEngine {
 						
 						for (Genre genre: song.genres)
 							if (genre.main.equals(word)) {
-								matchScore = MATCH_SCORE_MAIN;
+								matchScore = Config.MATCH_SCORE_MAIN;
 								break;
 							}
 						
@@ -102,7 +99,7 @@ public class SearchEngine {
 							for (Genre genre: song.genres)
 								for (String sub: genre.subs)
 									if (sub.equals(word)) {
-										matchScore = MATCH_SCORE_SUBS;
+										matchScore = Config.MATCH_SCORE_SUBS;
 										break;
 								}
 						}

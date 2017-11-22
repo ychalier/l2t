@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import tools.Config;
 import tools.Tools;
 
 /**
@@ -21,11 +22,6 @@ public class Song {
 	
 	// Remove domains such as Soundcloud or Spotify (for now)
 	public  static final String DOMAIN_FILTER = "youtube.com;youtu.be;soundcloud.com";
-	
-	// Influences the mean score
-	// (weighted average between fame and quality)
-	private static final int WEIGHT_FAME    = 2;
-	private static final int WEIGHT_QUALITY = 1;
 	
 	// Id
 	public String id;
@@ -148,8 +144,8 @@ public class Song {
 	 * @return the score of the song
 	 */
 	public double meanScore() {
-		return ( WEIGHT_FAME * fame 
-			   + WEIGHT_QUALITY * quality
+		return ( Config.WEIGHT_FAME * fame 
+			   + Config.WEIGHT_QUALITY * quality
 			   ) / 2;
 	}
 	

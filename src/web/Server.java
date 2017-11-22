@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import tools.Config;
 import tools.Logger;
 import tools.Tools;
 
@@ -28,15 +29,12 @@ public class Server  {
 	// Static files should be referred to from the root ("/")
 	// in a template file.
 	
-	// Default server port
-	public static final int    PORT          = 8080;
-	
 	private Router router;
 	private ServerSocket server;
 	
 	public Server(Router router) throws IOException {
 		this.router = router;
-		this.server = new ServerSocket(PORT);
+		this.server = new ServerSocket(Config.PORT);
 	}
 
 	/**
@@ -49,12 +47,12 @@ public class Server  {
 	public void run(boolean openBrowser, boolean closeOnRequest, boolean verbose) throws Exception {
 		
 		if (openBrowser)
-			Tools.openBrowser("http://localhost:" + PORT + "/");
+			Tools.openBrowser("http://localhost:" + Config.PORT + "/");
 		
 		if (verbose)
-			System.out.println("Listening for connection on port " + PORT + " ...");
+			System.out.println("Listening for connection on port " + Config.PORT + " ...");
 		
-	    Logger.wr("Listening for connection on port " + PORT + " ...");
+	    Logger.wr("Listening for connection on port " + Config.PORT + " ...");
 	    while (true){
 	    	// Reading incoming requests
 	    	Socket clientSocket = server.accept();

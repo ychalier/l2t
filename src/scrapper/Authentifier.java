@@ -11,6 +11,7 @@ import java.util.Random;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import tools.Config;
 import tools.JSONHandler;
 import tools.Logger;
 import tools.Tools;
@@ -45,9 +46,7 @@ public class Authentifier {
 	
 	private static final String POST_PARAMETERS_RETRIEVAL = "grant_type=authorization_code&code=CODE&redirect_uri=REDIRECT_URI";
 	private static final String POST_PARAMETERS_REFRESH   = "grant_type=refresh_token&refresh_token=TOKEN";
-	
-	private static final String FILE_TOKEN  = "token.json";
-	
+		
 	private RedditAPI  api;
 	
 	private String     code;
@@ -78,7 +77,7 @@ public class Authentifier {
 	 * @throws Exception
 	 */
 	public void auth() throws Exception {
-		if (!new File(FILE_TOKEN).exists())
+		if (!new File(Config.FILE_TOKEN).exists())
 			if (code == null) {
 				newAuth = true;
 				retrieveCodeServerOut();
@@ -97,7 +96,7 @@ public class Authentifier {
 				@Override
 				public void run() {
 					
-					String url = "http://localhost:" + Server.PORT + "/wait";
+					String url = "http://localhost:" + Config.PORT + "/wait";
 					
 					// Automatically opening the browser to allow user's click
 					Tools.openBrowser(url);
@@ -308,7 +307,7 @@ public class Authentifier {
 	 */
 	private void saveToken() throws IOException, JSONException {
 		if (masterToken != null)
-			JSONHandler.save(masterToken, FILE_TOKEN);
+			JSONHandler.save(masterToken, Config.FILE_TOKEN);
 	}
 	
 	/**
@@ -365,7 +364,7 @@ public class Authentifier {
 	 * @throws JSONException
 	 */
 	private void loadToken() throws IOException, JSONException {
-		masterToken = JSONHandler.load(FILE_TOKEN);
+		masterToken = JSONHandler.load(Config.FILE_TOKEN);
 	}
 	
 	/**

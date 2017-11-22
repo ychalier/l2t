@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -6,6 +7,7 @@ import java.util.Map;
 import data.Library;
 import data.Song;
 import scrapper.YouTubeAPI;
+import tools.Config;
 import tools.Logger;
 import web.Model;
 import web.Router;
@@ -16,7 +18,8 @@ import web.View;
 /**
  * 
  * arguments
- * -l  --log  Activate the logger (into file .log)
+ * -l  --log              Activate the logger (into file .log)
+ * -c  --config  [PATH]   Loads a config file
  * 
  * @author Yohan Chalier
  *
@@ -27,12 +30,25 @@ public class Main {
 		
 		// Reading arguments
 		boolean log = false;
+		String configPath = null;
 		for (int i = 0; i < args.length; i++)
 			if (args[i].equals("-l") || args[i].equals("--log"))
 				log = true;
+			else if (args[i].equals("-c") || args[i].equals("--config"))
+				configPath = args[i+1];
 		
 		// Initialize logger
 		new Logger(log);
+		
+		// Load configuration
+		if (configPath != null) {
+			Logger.wr("Loading config file: " + configPath);
+			System.out.println("Loading config file: " + configPath);
+			Config.load(new File(configPath));
+		} else {
+			Logger.wr("No config file specified. Using default values.");
+			System.out.println("No config file specified. Using default values.");
+		}		
 			
 		Object[] objs      = Library.loadLibrary();
 		Library library    = (Library) objs[0];
