@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Map;
 
 import data.Library;
 import data.Song;
@@ -7,7 +8,6 @@ import tools.Logger;
 import web.Model;
 import web.Router;
 import web.Server;
-import web.StaticEngine;
 import web.TemplateEngine;
 import web.View;
 
@@ -39,7 +39,24 @@ public class Main {
 		// Landing page
 		router.addView("^$",
 				new View(Server.TEMPLATES_DIR + "base.html",
-						new StaticEngine()));
+						new TemplateEngine() {
+
+							@Override
+							public String process(View view) {
+								
+								Map<String, Integer> map = view
+										.getModel()
+										.getLibrary()
+										.getGenres();
+								
+								StringBuilder builder = new StringBuilder();
+								for (String genre: map.keySet())
+									builder.append("\"" + genre + "\",");
+								builder.setCharAt(builder.length()-1, ' ');
+								return view.getTemplate().replace("GENRES", builder.toString());
+							}
+					
+				}));
 		
 		// Player page
 		router.addView("^search/([a-zA-Z0-9-]+)$", 
@@ -94,8 +111,39 @@ public class Main {
 					)
 				);
 		
+		// Library page
+		router.addView("^library\\/?$",
+				new View(Server.TEMPLATES_DIR + "library.html",
+					new TemplateEngine() {
+						@Override
+						public String process(View view) {
+							StringBuilder builder = new StringBuilder();
+							
+							for (Song song: view.getModel().getLibrary().getSongs()) {
+								builder.append("<tr>"
+										+ "<td>" + song.id + "</td>"
+										+ "<td>" + song.artist + "</td>"
+										+ "<td>" + song.title + "</td>"
+										+ "<td>" + song.toStringGenres() + "</td>"
+										+ "<td>" + song.domain + "</td>"
+										+ "<td><a href=\"" + song.url + "\"> " + song.url + "</a></td>"
+										+ "<td>" + song.fame + "</td>"
+										+ "<td>" + song.quality + "</td>"
+										+ "</tr>");
+							}	
+							
+							String response = view.getTemplate()
+									.replace("PLACEHOLDER", builder.toString());
+							return response;
+						}
+			
+					}
+				));
+		
 		Server server = new Server(router);
 		server.run(true, false);
+		
+		System.out.println(library.getGenres());
 		
 	}
 }

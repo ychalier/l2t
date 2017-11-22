@@ -120,13 +120,23 @@ public class Song {
 		return json;
 	}
 	
+	public String toStringGenres() {
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < genres.size(); i++) {
+			builder.append(genres.get(i).toString());
+			if (i < genres.size() - 1)
+				builder.append(" / ");
+		}
+		return builder.toString();
+	}
+	
 	/**
 	 * Format:
 	 * Artist - Title [genre] (fame score/quality score)
 	 */
 	@Override
 	public String toString() {
-		return artist + " - " + title + " " + genres + " "
+		return artist + " - " + title + " " + toStringGenres() + " "
 				+ "(" + Tools.doubleToStr(fame)
 				+ "/" + Tools.doubleToStr(quality) + ")";
 	}

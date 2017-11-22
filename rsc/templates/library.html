@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <title>Leethan 2 Theece</title>
+    <link href="https://fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Fjalla One', sans-serif;
+        background: #000;
+        color: #FFF;
+        text-align: center;
+      }
+
+      /*** TITLE ***/
+
+      h1 {
+        color: #FFF;
+        text-transform: uppercase;
+        font-size: 72px;
+        margin: 50px 0 50px 0;
+        letter-spacing: 2px;
+      }
+
+      .title span {
+        text-shadow: #FFF 1px 1px, #FFF 2px 2px, #FFF 3px 3px, #FFF 4px 4px, #FFF 5px 5px, #FFF 6px 6px;
+        min-width: 10px;
+        min-height: 10px;
+        position: relative;
+        color: #000;
+      }
+
+      table{
+        width: 100%;
+        text-align: left;
+      }
+
+      a{
+        color: lightskyblue;
+      }
+
+      *{
+        overflow: scroll;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <section class="container">
+      <h1>
+        <div class="title">Leethan 2 Theece</div>
+      </h1>
+    </section>
+
+
+    <table>
+
+      <tr>
+        <th>id</th>
+        <th>artist</th>
+        <th>title</th>
+        <th>genre(s)</th>
+        <th>domain</th>
+        <th>url</th>
+        <th>fame</th>
+        <th>quality</th>
+      </tr>
+
+      PLACEHOLDER
+
+    </table>
+
+    <script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.0/TweenMax.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lettering.js/0.7.0/jquery.lettering.min.js"></script>
+
+    <script>
+
+      $(document).ready(function() {
+        $(".title").lettering();
+      });
+
+      function animation() {
+        var title1 = new TimelineMax();
+        title1.staggerFromTo(".title span", 0.5,
+        {ease: Back.easeOut.config(1.7), opacity: 0, bottom: -80},
+        {ease: Back.easeOut.config(1.7), opacity: 1, bottom: 0}, 0.05);
+      }
+
+      $(document).ready(function() {
+        animation();
+      }, 100);
+
+    </script>
+  </body>
+
+</html>

@@ -3,6 +3,8 @@ package data;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -128,6 +130,17 @@ public class Library {
 		jury.computeScores();
 		System.out.println("Done.");
 		Logger.wr("Computing scores done.");
+	}
+	
+	public Map<String, Integer> getGenres(){
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		for (Song song: songs)
+			for (Genre genre: song.genres)
+				if (map.containsKey(genre.main))
+					map.put(genre.main, map.get(genre.main) + 1);
+				else
+					map.put(genre.main, 1);
+		return map;
 	}
 	
 	/**

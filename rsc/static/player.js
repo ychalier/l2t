@@ -181,6 +181,11 @@ function loadSong(){
     $("#song-title").html(data[index][3]);
     $("#song-index").html(index + 1);
     $("#song-max").html(data.length);
+		if (data[index][0] == "yt"){
+			$("#song-link").attr("href", "http://youtu.be/" + data[index][1]);
+		} else if (data[index][0] == "sc"){
+			$("#song-link").attr("href", data[index][1]);
+		}
 
 		// Reset progression vars
     tStart   = 0;

@@ -81,6 +81,10 @@ h1 {
 
 /*** SEARCH BAR ***/
 
+.searchbar{
+	transition: .2s ease;
+}
+
 .searchbar > *{
 	display: inline-block;
 }
@@ -108,6 +112,29 @@ input{
 }
 
 .btn{
+	cursor: pointer;
+}
+
+.suggestions{
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 0;
+	padding: 10px;
+	max-width: 100%;
+	opacity: 0;
+	list-style-type: none;
+	text-align: left;
+	font-size: 18px;
+	background: #222;
+	transition: .2s ease;
+	box-shadow: #AAA 4px 4px;
+}
+
+.suggestions li{
+	margin: 8px;
+	padding: 0;
 	cursor: pointer;
 }
 

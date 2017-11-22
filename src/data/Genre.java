@@ -23,7 +23,11 @@ public class Genre {
 		String genraNoSpace = Regex.parse(Regex.PATTERN_SPACES, genra.toLowerCase());
 		
 		if (genraNoSpace != null) { // The string should be well formatted then
-			String[] split = genraNoSpace.split(" |-");
+			String[] split = genraNoSpace
+					.replace("hip-hop",   "hiphop")
+					.replace("hip hop",   "hiphop")
+					.replace("chill hop", "chillhop")
+					.split(" |-");
 			main = split[split.length-1];      // Main word in English is at the end
 			subs = new String[split.length-1]; // The others are adjectives-like
 			for(int i=0; i<subs.length; i++) subs[i] = split[i];
@@ -47,7 +51,19 @@ public class Genre {
 	
 	
 	public String toString() {
-		return main;
+		StringBuilder builder = new StringBuilder();
+		if (subs.length > 0) {
+			builder.append("(");
+			for (int i = 0; i < subs.length; i++) {
+				builder.append(subs[i]);
+				if (i < subs.length - 1) {
+					builder.append(", ");
+				}
+			}
+			builder.append(") ");
+		}
+		builder.append(main);
+		return builder.toString();
 	}
 	
 	/**

@@ -134,7 +134,7 @@ public class PostSong extends Song {
 			throw new SongException("genre string is null");
 		
 		String[] split = genreString.toLowerCase()
-				.replace("?", "")
+				.replace("?", "") // Had one genre that was 'pop?'
 				.split("/|,");
 		genres = new ArrayList<Genre>();
 		for(int i=0; i<split.length; i++)
