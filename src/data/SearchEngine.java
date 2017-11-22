@@ -2,9 +2,11 @@ package data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,7 +62,8 @@ public class SearchEngine {
 	 */
 	public ArrayList<Song> search(String query){
 		// The set of unique words in the query
-		parse   = new HashSet<String>(Arrays.asList(query.toLowerCase().split(" |-")));
+		parse   = new HashSet<String>(
+				Arrays.asList(query.toLowerCase().split(" |-")));
 		
 		results = new ArrayList<Song>();
 		scores  = new HashMap<Song, Integer>();
@@ -77,22 +80,32 @@ public class SearchEngine {
 					// If one of the song main genre matches a word in the query,
 					// the song is part of the results.
 					for (Genre genre: song.genres)
-						if (genre.main != null && genre.main.equals(word) && !results.contains(song)) {
+						if (genre.main != null && genre.main.equals(word) 
+						&& !results.contains(song)) {
 							results.add(song);
 							break;
 						}
 					
 					// If the song has been selected, compute its score
 					// A 'main' match is worth more points than a 'sub' one
-					if (results.contains(song) && song.genre.toLowerCase().contains(word)) {
+					if (results.contains(song)) {
 						
-						int matchScore = MATCH_SCORE_SUBS;
+						int matchScore = 0;
 						
-						for (Genre genra: song.genres)
-							if (genra.main.equals(word)) {
+						for (Genre genre: song.genres)
+							if (genre.main.equals(word)) {
 								matchScore = MATCH_SCORE_MAIN;
 								break;
 							}
+						
+						if (matchScore == 0) {
+							for (Genre genre: song.genres)
+								for (String sub: genre.subs)
+									if (sub.equals(word)) {
+										matchScore = MATCH_SCORE_SUBS;
+										break;
+								}
+						}
 						
 						// Update of the hash map
 						if (scores.containsKey(song))
@@ -119,6 +132,13 @@ public class SearchEngine {
 		});
 		
 		return results;
+	}
+	
+	public List<Song> searchRandom(String query){
+		List<Song> songs = search(query);
+		Collections.shuffle(songs);
+		return songs;
+		
 	}
 
 }

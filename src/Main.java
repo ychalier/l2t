@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -49,11 +51,28 @@ public class Main {
 										.getLibrary()
 										.getGenres();
 								
-								StringBuilder builder = new StringBuilder();
+								ArrayList<String> genres = new ArrayList<String>();
 								for (String genre: map.keySet())
+									genres.add(genre);
+								genres.sort(new Comparator<String>() {
+									@Override
+									public int compare(String o1, String o2) {
+										if (map.get(o1) > map.get(o2)) 
+											return -1;
+										if (map.get(o1) < map.get(o2)) 
+											return  1;
+										return 0;
+									}
+								});
+								
+								StringBuilder builder = new StringBuilder();
+								for (String genre: genres)
 									builder.append("\"" + genre + "\",");
 								builder.setCharAt(builder.length()-1, ' ');
-								return view.getTemplate().replace("GENRES", builder.toString());
+								
+								return view.getTemplate().replace(
+										"GENRES", 
+										builder.toString());
 							}
 					
 				}));
@@ -67,15 +86,24 @@ public class Main {
 							public String process(View view) {
 								
 								String query = view.getHierarchy().get(1);
-								List<Song> songs = view
-										.getModel()
-										.getSearchEngine()
-										.search(query);
+								
+								List<Song> songs;
+								if (view.getQuery() != null && view.getQuery().length > 0) {
+									songs = view
+											.getModel()
+											.getSearchEngine()
+											.searchRandom(query);
+								} else {
+									songs = view
+											.getModel()
+											.getSearchEngine()
+											.search(query);
+								}
 								
 								StringBuilder builder = new StringBuilder();
 
 								// Format: [["YouTube ID", "Artist", "Title"], ...];
-								// Replacing char " (ASCII code 34) or it causes troubles in JS
+								// Replacing char " (ASCII code 34) (causes troubles in JS)
 								for(Song song: songs){
 									
 									if (song.domain.equals("youtube.com") 
