@@ -130,6 +130,13 @@ public class Library {
 		Logger.wr("Computing scores done.");
 	}
 	
+	/**
+	 * Get the list of main genre in the library,
+	 * and the number of occurrences.
+	 * 
+	 * @return A map of the genres and their number
+	 * 		   of occurrences.
+	 */
 	public Map<String, Integer> getGenres(){
 		Map<String, Integer> map = new HashMap<String, Integer>();
 		for (Song song: songs)
@@ -151,6 +158,7 @@ public class Library {
 	public static Object[] loadLibrary() throws Exception {
 		Library library;
 		Boolean newLibrary;
+		Thread serverThread = null;
 		if (new File(Config.FILE_LIBRARY).exists()) {
 			library = new Library(new File(Config.FILE_LIBRARY));
 			newLibrary = new Boolean(false);
@@ -169,9 +177,10 @@ public class Library {
 			// Save library has JSON
 			JSONHandler.save(library.toJSON(), Config.FILE_LIBRARY);
 			newLibrary = new Boolean(true);
+			serverThread = api.getAuthentifier().getThread();
 		}
 		library.computeScores();
-		return new Object[] {library, newLibrary};
+		return new Object[] {library, newLibrary, serverThread};
 	}
 	
 }

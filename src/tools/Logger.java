@@ -14,7 +14,7 @@ public class Logger {
 	
 	public Logger(boolean log) {
 		if (log)
-			logfile = new File(".log");
+			logfile = new File(Config.FILE_LOG);
 	}
 	
 	public static void wr(String msg) {

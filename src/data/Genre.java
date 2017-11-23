@@ -19,9 +19,17 @@ public class Genre {
 	public String   main;
 	public String[] subs;
 	
-	public Genre(String genra) {
+	/**
+	 * 
+	 * The constructor, from a string extracted from
+	 * a Reddit post, computes everything when
+	 * initializing.
+	 * 
+	 * @param genra A genre string from a Reddit post
+	 */
+	public Genre(String genre) {
 		// Removing spaces before and after the string
-		String genraNoSpace = Regex.parse(Regex.PATTERN_SPACES, genra
+		String genraNoSpace = Regex.parse(Regex.PATTERN_SPACES, genre
 				.toLowerCase()
 				.replace("&amp;", "&"));
 		
@@ -51,7 +59,9 @@ public class Genre {
 		}
 	}
 	
-	
+	/**
+	 * format: (sub1, sub2, ...) main 
+	 */
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		if (subs.length > 0) {
@@ -69,7 +79,7 @@ public class Genre {
 	}
 	
 	/**
-	 * Format: {"main": main, "subs": [sub1, ...]}
+	 * format: {"main": main, "subs": [sub1, ...]}
 	 * 
 	 * @return JSON containing all data from the object
 	 * @throws JSONException

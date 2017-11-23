@@ -116,6 +116,12 @@ public class Song {
 		return json;
 	}
 	
+	/**
+	 * Builds a string out of the list of
+	 * genre.
+	 * 
+	 * @return A string with all genres.
+	 */
 	public String toStringGenres() {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < genres.size(); i++) {

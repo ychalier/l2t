@@ -41,6 +41,7 @@ function search(){
 					input.focus();
 					input.value = this.w;
 					$(".suggestions").css("opacity", "0");
+					search();
 					return false;
 				};
 				suggestions++;

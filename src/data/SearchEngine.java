@@ -87,14 +87,18 @@ public class SearchEngine {
 					// A 'main' match is worth more points than a 'sub' one
 					if (results.contains(song)) {
 						
+						// Init the score with 0
 						int matchScore = 0;
 						
+						// Try to match a main genre
 						for (Genre genre: song.genres)
 							if (genre.main.equals(word)) {
 								matchScore = Config.MATCH_SCORE_MAIN;
 								break;
 							}
 						
+						// If no main genre found, then
+						// try with the subs.
 						if (matchScore == 0) {
 							for (Genre genre: song.genres)
 								for (String sub: genre.subs)
@@ -131,6 +135,13 @@ public class SearchEngine {
 		return results;
 	}
 	
+	/**
+	 * Finds songs corresponding to a query
+	 * and sort them randomly.
+	 * 
+	 * @param query The search query containing a genre-like selection
+	 * @return The order list of corresponding results.
+	 */
 	public List<Song> searchRandom(String query){
 		List<Song> songs = search(query);
 		Collections.shuffle(songs);

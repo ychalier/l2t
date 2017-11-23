@@ -54,6 +54,7 @@ public class Authentifier {
 	private JSONObject masterToken;
 	private JSONObject secondToken;
 	private Server     server;
+	private Thread	   thread;
 	
 	private boolean    newAuth = false;
 	
@@ -64,6 +65,10 @@ public class Authentifier {
 	public Authentifier(RedditAPI api) {
 		this.api  = api;
 		this.code = null;
+	}
+	
+	public Thread getThread() {
+		return thread;
 	}
 	
 	/**
@@ -89,9 +94,12 @@ public class Authentifier {
 			loadToken();
 		refreshToken();
 		
+		// If there is no need to retrieve any token,
+		// then the wait page never was open. So
+		// we open it.
 		if (!newAuth) {
 			
-			new Thread(new Runnable(){
+			thread =new Thread(new Runnable(){
 
 				@Override
 				public void run() {
@@ -116,7 +124,9 @@ public class Authentifier {
 					
 				}
 				
-			}).start();
+			});
+			
+			thread.start();
 			
 		}
 		

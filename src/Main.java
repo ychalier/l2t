@@ -31,14 +31,28 @@ public class Main {
 		// Reading arguments
 		boolean log = false;
 		String configPath = null;
-		for (int i = 0; i < args.length; i++)
+		int i = 0;
+		while (i < args.length) {
 			if (args[i].equals("-l") || args[i].equals("--log"))
 				log = true;
-			else if (args[i].equals("-c") || args[i].equals("--config"))
+			else if ((args[i].equals("-c") || args[i].equals("--config")) && i < args.length-1) {
 				configPath = args[i+1];
-		
-		// Initialize logger
-		new Logger(log);
+				i++;
+			}
+			else if ((args[i].equals("-h") || args[i].equals("--help"))) {
+				System.out.println("usage: java -jar [jarfile] [options]\n"
+						+ "Options and arguments:\n"
+						+ "-c --config [FILENAME] : load a config file\n"
+						+ "-l --log               : activate the logger (logfile set in config)\n"
+						+ "-h --help              : show this message");
+				return ;
+			}
+			else {
+				System.out.println("invalid parameter: " + args[i] + "\nTry with -h for help.");
+				return;
+			}
+			i++;
+		}
 		
 		// Load configuration
 		if (configPath != null) {
@@ -48,11 +62,15 @@ public class Main {
 		} else {
 			Logger.wr("No config file specified. Using default values.");
 			System.out.println("No config file specified. Using default values.");
-		}		
+		}
+		
+		// Initialize logger
+		new Logger(log);
 			
 		Object[] objs      = Library.loadLibrary();
 		Library library    = (Library) objs[0];
 		Boolean newLibrary = (Boolean) objs[1];
+		Thread  serverTh   = (Thread)  objs[2];
 		Model   model      = new Model(library);
 		Router  router     = new Router(model);
 				
@@ -186,6 +204,8 @@ public class Main {
 					}
 				));
 		
+		// Not a real view, used to answer when
+		// the wait page asks for an answer.
 		router.addView("^ask$", new View(Server.TEMPLATES_DIR + "wait.html",
 				new TemplateEngine() {
 
@@ -197,8 +217,14 @@ public class Main {
 				}
 			));
 		
+		if (serverTh != null)
+			serverTh.interrupt();
+		
 		Server server = new Server(router);
 		
+		// If the library is new, the wait page
+		// has been loaded and will update automatically
+		// so there is no need to start a new one.
 		if (newLibrary.booleanValue())
 			server.run(false, false, true);
 		else
