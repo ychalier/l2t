@@ -152,7 +152,8 @@ public class Main {
 								
 									builder.append(
 											  "\"" + song.artist.replace((char) 34, '\'') + "\", "
-											+ "\"" + song.title.replace((char) 34, '\'') + "\""
+											+ "\"" + song.title.replace((char) 34, '\'') + "\","
+											+ "\"" + song.thumbnail + "\""
 										    + "],");
 								}
 								

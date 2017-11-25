@@ -85,7 +85,7 @@ public class Library {
 	}
 	
 	/**
-	 * Format:
+	 * format:
 	 * 001: Artist - Title [Genre] (Fame score/Quality score)
 	 */
 	@Override

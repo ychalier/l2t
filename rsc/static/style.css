@@ -175,3 +175,16 @@ hr{
 	max-width: 100%;
 	transition: 2s linear;
 }
+
+/*** BACKGROUND ***/
+
+#bg{
+	opacity: .2;
+	width: 100vw;
+	height: 100vh;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-size: cover;
+	background-repeat: no-repeat;
+}
