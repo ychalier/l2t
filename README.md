@@ -26,12 +26,11 @@ Good question. Don't really have an answer. Why not? Just wanted to try it out. 
 
 ## installation
 
-You can for sure clone this repo, but the `.jar` file is enough. It contains everything.
+You can for sure clone this repo, but the jar file is enough. It contains everything.
 
 ## getting started
 
-If you're using the `.jar` file, you can use it by double-clicking in a graphic interface (strongly NOT recommanded, as you won't be able to stop the web server  unless you kill the process with the task manager).
-What I recommand is using it in command lines:
+If you're using the jar file, you can use it by double-clicking in a graphic interface. Though I recommand is using it in command lines:
 
 	java -jar jarfile.jar [options]
 
@@ -40,73 +39,36 @@ What I recommand is using it in command lines:
 
  option | extanded   | argument | description              
 ------- | ---------- | -------- | -------------
- `-h`   | `--help'   |          | display this help menu   
+ `-h`   | `--help`   |          | display this help menu   
  `-l`   | `--log`    |          | activate the logger
- `-c`   | `--config` | FILENAME | load a given config file
+ `-c`   | `--config` | filename | load a given config file
 
 
 See below for more info about the logger and the config file.
 
 ### config
 
-A configuration file allows any user to changes the way the program handles the posts and the songs. Lines starting with a `#` are ommitted, as for empty lines. See the file `.config` for an example.
+A configuration file allows any user to changes the way the program handles the posts and the songs. Lines starting with a `#` are ommitted, as for empty lines. Syntax of a line is
 
-	# Default lines contains default
-	# values that are hard-coded in the
-	# software.
-	
-	# The port to open the local server on. Do not change unless you alreadyhave a library file to load.
-	# PORT=8080
-	
-	# The number of posts to fetch on the subreddit.
-	# FETCH_AMOUNT=999
-	
-	# When computing the score of a song, it averages between a fame score, based on views, and a quality score based on likes (more or less). The weights of this average are those:
-	# WEIGHT_FAME=2
-	# WEIGHT_QUALITY=1
-	
-	# When using the search engine on the webpage, a 'match' score is computed based on how the song genres match the query. If it matches the most important noun, it is a main match. If it matches an adjective-like word, it is a sub match. Those are worth:
-	# MATCH_SCORE_MAIN=3
-	# MATCH_SCORE_SUBS=1
+	PARAMETER=value
 
-	# Once this is done, the final results are ordered with a score averaging the match score previously computed with the song score.
-	# WEIGHT_SONG_SCORE=1
-	# WEIGHT_MATCH_SCORE=1
-	
-	# The file to save the library to
-	# FILE_LIBRARY=library.json
-	
-	# The file to save the token at
-	# FILE_TOKEN=token.json
-	
-	# The file to save the log at
-	# FILE_LOG=.log
-	
-	# User agent to use when send HTTP requests.
-	# USER_AGENT=Mozilla/5.0
-    
-	# Correspondences: To handle typos and synonimity across genres, the software uses this table to map the corresponding genre.
-	#
-	# Syntax is the following:
-	# main genre:sub genre;sub genre; sub genre
-	#
-	# Default correspondences are hard-coded. If one line in this configuration file starts with CORR, then the default map is totally emptied and replaced by the lines from this file.
-	#
-	# CORR=hiphop:hip-hop;hip hop
-	# CORR=chillhop:chill hop
-	# CORR=rnb:r&b
-	# CORR=rock&roll:rock'n'roll
-	# CORR=electro:electronica;electronic;electonic
-	# CORR=psychedelic:psych
-	# CORR=alternative:alt
-	# CORR=acapelle:cappella
-	# CORR=chill:chillout;chillwave;downtempo;ambient
-	# CORR=pop electro:electopop;electropop
-	# CORR=punk electro:electropunk
-	# CORR=rock electro:electrorock
-	# CORR=edm:idm
-	# CORR=indie:indi
-	# CORR=jazz:jazzhop
+See the file `.config` for an example
+
+parameter | default | description
+--------- | --------- | -----------
+`PORT` | 8080 | The port to open the local server on. Do not change unless you already have a library file to load.
+`FETCH_AMOUNT` | 999 | The number of posts to fetch on the subreddit.
+`WEIGHT_FAME` | 2 | Importance of fame score in global song score
+`WEIGHT_QUALITY` | 1 | Importance of quality score in global song score
+`MATCH_SCORE_MAIN` | 3 | Importance of main genre noun match in match score
+`MATCH_SCORE_SUBS` | 1 | Importance of genre adjective match in match score
+`WEIGHT_SONG_SCORE` | 1 | Importance of song score in song search score
+`WEIGHT_MATCH_SCORE` | 1 | Importance of match score in song search score
+`FILE_LIBRARY` | library.json | The file to save the library to
+`FILE_TOEKN` | token.json | The file to save the token at
+`FILE_LOG` | .log | The file to save the log at
+`USER_AGENT` | Mozilla/5.0 | User agent to use when send HTTP requests.
+`CORR` | see example | To handle typos and synonimity across genres, the software uses a table to map the corresponding genre. If one line in the configuration file starts with `CORR`, then the default map is totally emptied and replaced by the lines from this file. Format is `main genre:sub genre 1;sub genre 2`. You can add as much sub genres as you want, by separating them with semi-colons.
 
 ### logger
 
@@ -115,6 +77,26 @@ handle a song when adding to the library. Its purpose was mainly to understand w
 Therefore, if you encounter a bug, you can report the stack trace you got from the terminal.
 
 ## usage
+
+### Web interface
+
+The interface consists of a small website. The sitemap is the following:
+
+	/		            landing page, with the search bar
+	    /wait	            waiting page, when the library's loading
+	    /library		    a display of all the database
+	    /search/(query)	    playlist page
+	    /search/(query)?rand    playlist page with the songs shuffled
+
+The interface is pretty intuitive I think, you should not be too lost.
+
+### Exiting
+
+Web pages send pulses to the server to keep it alive everything 2 seconds. If the server does not receive any request for 10 seconds, it automatically closes. If anything happens, try to start the program with command lines. You might see an error like:
+
+	Exception in thread "main" java.net.BindException: Address already in use (Bind failed)
+
+It means the previous program did no close correctly and still runs in the background. So you'll have to kill the process manually.
 
 ### External files
 
@@ -126,27 +108,9 @@ at the beginning to retrieve it, that's all.
 
 #### Library building
 
-Then a library is built by the program. By default, it is stored in `library.json`. The amount of data stored is set by the FETCH_AMOUNT parameter in the config file.
+Then a library is built by the program. By default, it is stored in `library.json`. The amount of data stored is set by the `FETCH_AMOUNT` parameter in the config file.
 The library does not update itself. So if you want to refresh it, just delete the file and a new one will be generated.
 
-### Web interface
-
-The interface consists of a small website. The sitemap is the following:
-
-	/					          landing page, with the search bar
-		/wait			          waiting page, when the library's loading
-		/library			      a display of all the database
-		/search/(query)			  playlist page
-			/search/(query)?rand  playlist page with the songs shuffled
-
-The interface is pretty intuitive I think, you should not be too lost.
-
-### Exit
-
-Be sure to exit the program (kill the process) at the end, so the server exits and releases the port.
-Otherwise, you won't be able to re-open the program afterward. You'll get an error like:
-
-	Exception in thread "main" java.net.BindException: Address already in use (Bind failed)
 
 ## development
 
