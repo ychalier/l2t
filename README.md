@@ -32,7 +32,7 @@ You can for sure clone this repo, but the jar file is enough. It contains everyt
 
 If you're using the jar file, you can use it by double-clicking in a graphic interface. Though I recommand is using it in command lines:
 
-	java -jar jarfile.jar [options]
+	java -jar l2t.jar [options]
 
 ### options
 
