@@ -227,9 +227,9 @@ public class Main {
 		// has been loaded and will update automatically
 		// so there is no need to start a new one.
 		if (newLibrary.booleanValue())
-			server.run(false, false, true);
+			server.run(false, false, true, true);
 		else
-			server.run(true, false, true);
+			server.run(true, false, true, true);
 				
 	}
 }

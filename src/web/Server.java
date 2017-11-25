@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 import tools.Config;
 import tools.Logger;
@@ -25,7 +26,7 @@ public class Server  {
 	// The folder containing the static files
 	public static final String STATIC_DIR    = "/static/";
 	// Static files types supported
-	public static final String STATIC_FILES  = "(.css|.js|.ico)";
+	public static final String STATIC_FILES  = "(.css|.js)";
 	// Static files should be referred to from the root ("/")
 	// in a template file.
 	
@@ -41,36 +42,49 @@ public class Server  {
 	 * Starts the server.
 	 * 
 	 * @param openBrowser Should the browser be open with a local URL at start
-	 * @param closeOnRequest Should the server close after receiving a request
+	 * @param oneTimeServer Should the server close after receiving a request
 	 * @throws Exception
 	 */
-	public void run(boolean openBrowser, boolean closeOnRequest, boolean verbose) throws Exception {
+	public void run(boolean browse, boolean unique, boolean verbose, boolean timeout) 
+			throws Exception {
 		
-		if (openBrowser)
+		if (browse)
 			Tools.openBrowser("http://localhost:" + Config.PORT + "/");
 		
 		if (verbose)
 			System.out.println("Listening for connection on port " + Config.PORT + " ...");
 		
 	    Logger.wr("Listening for connection on port " + Config.PORT + " ...");
+	    
+	    if (timeout)
+	    	server.setSoTimeout(10000);
+	    
 	    while (true){
 	    	// Reading incoming requests
-	    	Socket clientSocket = server.accept();
-	    	BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			String request = reader.readLine();	
-			if (verbose)
-				System.out.println(request);
-			Logger.wr(request);
-			
-			// Preparing response
-			String httpResponse = "HTTP/1.1 200 OK\r\n\r\n" + getResponse(request);
-			
-			// Sending response
-			clientSocket.getOutputStream().write(httpResponse.getBytes("UTF-8"));
-			clientSocket.close();
-			
-			if (closeOnRequest)
-				break;
+	    	try {
+	    		Socket clientSocket = server.accept();
+		    	BufferedReader reader = new BufferedReader(
+		    			new InputStreamReader(clientSocket.getInputStream())
+		    			);
+				String request = reader.readLine();	
+				if (verbose)
+					System.out.println(request);
+				if (!request.contains("pulse"))
+					Logger.wr(request);
+				
+				// Preparing response
+				String httpResponse = "HTTP/1.1 200 OK\r\n\r\n" 
+									+ getResponse(request);
+				
+				// Sending response
+				clientSocket.getOutputStream()
+							.write(httpResponse.getBytes("UTF-8"));
+				clientSocket.close();
+				
+				if (unique) break;
+	    	} catch (SocketTimeoutException e) {
+	    		break;
+	    	}
 	    }
 	    this.server.close();
 	}

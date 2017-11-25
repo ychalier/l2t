@@ -119,7 +119,7 @@ public class Authentifier {
 								Server.TEMPLATES_DIR + "wait.html",
 								new StaticEngine()));
 						server = new Server(router);
-						server.run(false, true, false);
+						server.run(false, true, false, false);
 					} catch (Exception e) {}
 					
 				}
@@ -233,7 +233,7 @@ public class Authentifier {
 		
 		// Creating and starting the server
 		server = new Server(router);
-		server.run(false, true, true);
+		server.run(false, true, true, false);
 	}
 	
 	/**
