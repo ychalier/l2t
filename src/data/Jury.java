@@ -1,5 +1,6 @@
 package data;
 
+import java.util.ArrayList;
 import java.util.function.Function;
 
 /**
@@ -28,14 +29,18 @@ public class Jury {
 	 */
 	public void computeScores() {
 		
+		ArrayList<Song> songs = new ArrayList<Song>();
+		for (String key: library.getSongs().keySet())
+			songs.add(library.getSongs().get(key));
+		
 		// Fame score matrix
 		ScoreMatrix fameMatrix = new ScoreMatrix(
-				library.getSongs(),
+				songs,
 				(Function<Song, int[]>) this::getFameAttrs);
 		
 		// Quality score matrix
 		ScoreMatrix qualityMatrix = new ScoreMatrix(
-				library.getSongs(),
+				songs,
 				(Function<Song, int[]>) this::getQualityAttrs);
 		
 		// Computing scores
@@ -43,9 +48,9 @@ public class Jury {
 		double[] qualityScore = qualityMatrix.getScore();
 		
 		// Setting values to songs objects
-		for(int i=0; i<library.getSongs().size(); i++) {
-			library.getSongs().get(i).fame = fameScore[i];
-			library.getSongs().get(i).quality = qualityScore[i];
+		for(int i = 0; i < songs.size(); i++) {
+			songs.get(i).fame = fameScore[i];
+			songs.get(i).quality = qualityScore[i];
 		}
 	}
 	

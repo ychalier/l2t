@@ -17,7 +17,7 @@ import tools.Regex;
 public class Router {
 	
 	private Map<String, View> map;
-	private Model  model;
+	private Model  model;	
 	
 	/**
 	 * The association is made using a hash map.
@@ -30,12 +30,16 @@ public class Router {
 		map = new HashMap<String, View>();
 	}
 	
+	public Model getModel() {
+		return model;
+	}
+	
 	/**
 	 * Adds a view to the map and sets its model to it
 	 * 
 	 * @param pattern The regular expression of the route
 	 * @param view The corresponding view
-	 * @see View
+	 * @see TemplateView
 	 */
 	public void addView(String pattern, View view) {
 		view.setModel(model);
@@ -67,9 +71,9 @@ public class Router {
 			if (extension.matches(Server.STATIC_FILES)) { // If it is supported
 				
 				// Uses a StaticEngine to ease programming
-				View view = null;
+				TemplateView view = null;
 				try {
-					view = new  View(
+					view = new  TemplateView(
 							Server.STATIC_DIR + url,
 							new StaticEngine());
 					return view;

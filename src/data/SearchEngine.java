@@ -65,7 +65,8 @@ public class SearchEngine {
 		results = new ArrayList<Song>();
 		scores  = new HashMap<Song, Integer>();
 				
-		for (Song song: library.getSongs()) {
+		for (String key: library.getSongs().keySet()) {
+			Song song = library.getSongs().get(key);
 			
 			if (query.equals("")) { // Empty query means all song match
 				results.add(song);

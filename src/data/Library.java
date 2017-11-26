@@ -2,7 +2,6 @@ package data;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,7 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import scrapper.RedditAPI;
 import tools.Config;
 import tools.JSONHandler;
 import tools.Logger;
@@ -24,7 +22,7 @@ import tools.Logger;
  */
 public class Library {
 			
-	private ArrayList<Song> songs;
+	private Map<String, Song> songs;
 	private Jury jury;
 	
 	/**
@@ -36,28 +34,29 @@ public class Library {
 	 * 				Each post pertinent data are located in ["data"]
 	 */
 	public Library(JSONArray posts) {
-		System.out.print("Building library...");
-		Logger.wr("Building library...");
-		// Printing new line as SongException are likely to occur
-		songs = new ArrayList<Song>();
+		
+		Logger.wrI("LIBRARY", "Building library from posts");
+		
+		songs = new HashMap<String, Song>();
 		
 		for(int i=0; i<posts.length(); i++) {
 			
 			try {
 				try {
-					songs.add(new PostSong(posts.getJSONObject(i).getJSONObject("data")));
+					PostSong tmp = new PostSong(posts.getJSONObject(i).getJSONObject("data")); 
+					songs.put(tmp.id, tmp);
 				} catch (JSONException e) {
 					throw new SongException("invalid post json");
 				}
 			} catch (SongException e) {
-				Logger.wr(e.toString());
+				Logger.wrW("LIBRARY", e.toString());
 			}
 				
 		}
 		
 		jury = new Jury(this);
-		System.out.println(" Done.");
-		Logger.wr("Building library done.");
+
+		Logger.wrI("LIBRARY", "Library built");
 	}
 	
 	/**
@@ -68,19 +67,48 @@ public class Library {
 	 * @throws IOException
 	 */
 	public Library(File file) throws JSONException, IOException {
-		System.out.print("Building library...");
-		songs = new ArrayList<Song>();
+		Logger.wrI("LIBRARY", "Building library from JSON");
+		songs = new HashMap<String, Song>();
 		
 		JSONArray array = JSONHandler.load(file).getJSONArray("list");
-		for(int i = 0; i < array.length(); i++)
-			songs.add(new Song(array.getJSONObject(i)));
+		for(int i = 0; i < array.length(); i++) {
+			Song tmp = new Song(array.getJSONObject(i));
+			songs.put(tmp.id, tmp);
+		}
 		
 		jury = new Jury(this);
-		System.out.println(" Done.");
+		Logger.wrI("LIBRARY", "Library built");
+	}
+	
+	
+	public void append(JSONArray posts) {
+		
+		Logger.wrI("LIBRARY", "Refreshing library");
+		
+		for(int i=0; i<posts.length(); i++) {
+			
+			try {
+				try {
+					PostSong tmp = new PostSong(posts.getJSONObject(i).getJSONObject("data"));
+					if (!songs.containsKey(tmp.id))
+						songs.put(tmp.id, tmp);
+				} catch (JSONException e) {
+					throw new SongException("invalid post json");
+				}
+			} catch (SongException e) {
+				Logger.wrW("LIBRARY", e.toString());
+			}
+				
+		}
+		
+		jury = new Jury(this);
+
+		Logger.wrI("LIBRARY", "Library refreshed");
+		
 	}
 	
 
-	public ArrayList<Song> getSongs(){
+	public Map<String, Song> getSongs(){
 		return songs;
 	}
 	
@@ -91,13 +119,16 @@ public class Library {
 	@Override
 	public String toString() {
 		StringBuilder out = new StringBuilder();
-		for(int i = 0; i < songs.size(); i++) {
+		int i = 0;
+		int maxSize = Integer.toString(songs.size()).length();
+		
+		for(String key: songs.keySet()) {
 			// Add '0' to align all numbers
-			int maxSize = Integer.toString(songs.size()).length();
-			for(int k = 0; k < maxSize - Integer.toString(i+1).length(); k++)
+			for(int k = 0; k < maxSize - Integer.toString(i).length(); k++)
 				out.append("0");
-			out.append(Integer.toString(i+1) + ": " + songs.get(i).toString() + "\n");
+			out.append(Integer.toString(i) + ": " + songs.get(key).toString() + "\n");
 		}
+		
 		return out.toString();
 	}
 	
@@ -112,10 +143,21 @@ public class Library {
 	 */
 	public JSONObject toJSON() throws JSONException {
 		JSONArray array = new JSONArray();
-		for(Song song : songs) array.put(song.toJSON());
+		for(String key : songs.keySet())
+			array.put(songs.get(key).toJSON());
 		JSONObject json = new JSONObject();
 		json.put("list", array);
 		return json;
+	}
+	
+	
+	public void save() throws IOException, JSONException {
+		save(Config.FILE_LIBRARY);
+	}
+	
+	
+	public void save(String filename) throws IOException, JSONException {
+		JSONHandler.save(toJSON(), filename);
 	}
 	
 	/**
@@ -123,11 +165,9 @@ public class Library {
 	 * for each song.
 	 */
 	public void computeScores() {
-		Logger.wr("Computing scores...");
-		System.out.print("Computing scores... ");
+		Logger.wrI("LIBRARY", "Computing scores");
 		jury.computeScores();
-		System.out.println("Done.");
-		Logger.wr("Computing scores done.");
+		Logger.wrI("LIBRARY", "Scores computed");
 	}
 	
 	/**
@@ -139,48 +179,13 @@ public class Library {
 	 */
 	public Map<String, Integer> getGenres(){
 		Map<String, Integer> map = new HashMap<String, Integer>();
-		for (Song song: songs)
-			for (Genre genre: song.genres)
+		for (String key: songs.keySet())
+			for (Genre genre: songs.get(key).genres)
 				if (map.containsKey(genre.main))
 					map.put(genre.main, map.get(genre.main) + 1);
 				else
 					map.put(genre.main, 1);
 		return map;
-	}
-	
-	/**
-	 * If a library already exists in FILE_LIBRARY, loads it.
-	 * Else, create a Reddit API to fetch a new library.
-	 * 
-	 * @return A new library.
-	 * @throws Exception
-	 */
-	public static Object[] loadLibrary() throws Exception {
-		Library library;
-		Boolean newLibrary;
-		Thread serverThread = null;
-		if (new File(Config.FILE_LIBRARY).exists()) {
-			library = new Library(new File(Config.FILE_LIBRARY));
-			newLibrary = new Boolean(false);
-		} else {
-			// Create the Reddit API
-			RedditAPI api = new RedditAPI(RedditAPI.DEFAULT_CLIENT_ID, 
-					RedditAPI.DEFAULT_REDIRECT_URI
-					.replace("PORT", Integer.toString(Config.PORT)));
-			
-			// Retrieve or refresh token
-			api.auth();
-			
-			// Fetch data and build library
-			library = new Library(api.fetchData(Config.FETCH_AMOUNT));
-			
-			// Save library has JSON
-			JSONHandler.save(library.toJSON(), Config.FILE_LIBRARY);
-			newLibrary = new Boolean(true);
-			serverThread = api.getAuthentifier().getThread();
-		}
-		library.computeScores();
-		return new Object[] {library, newLibrary, serverThread};
 	}
 	
 }

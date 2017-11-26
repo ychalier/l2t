@@ -22,7 +22,10 @@ public class Config {
 	
 	public static int    PORT               = 8080;
 	
+	public static int    SOCKET_TIMEOUT     = 10000;
+	
 	public static int    FETCH_AMOUNT       = 999;
+	public static int    REFRESH_AMOUNT     = 100;
 
 	public static int    WEIGHT_FAME        = 2;
 	public static int    WEIGHT_QUALITY     = 1;
@@ -87,8 +90,14 @@ public class Config {
 						if (split[0].equals("PORT"))
 							PORT = Integer.parseInt(split[1]);
 						
+						else if (split[0].equals("SOCKET_TIMEOUT"))
+							SOCKET_TIMEOUT = Integer.parseInt(split[1]);
+						
 						else if (split[0].equals("FETCH_AMOUNT"))
 							FETCH_AMOUNT = Integer.parseInt(split[1]);
+						
+						else if (split[0].equals("REFRESH_AMOUNT"))
+							REFRESH_AMOUNT = Integer.parseInt(split[1]);
 						
 						else if (split[0].equals("WEIGHT_FAME"))
 							WEIGHT_FAME = Integer.parseInt(split[1]);
@@ -103,10 +112,10 @@ public class Config {
 							MATCH_SCORE_SUBS = Integer.parseInt(split[1]);
 						
 						else if (split[0].equals("WEIGHT_SONG_SCORE"))
-							WEIGHT_SONG_SCORE = Integer.parseInt(split[1]);
+							WEIGHT_SONG_SCORE = Double.parseDouble(split[1]);
 						
 						else if (split[0].equals("WEIGHT_MATCH_SCORE"))
-							WEIGHT_MATCH_SCORE = Integer.parseInt(split[1]);
+							WEIGHT_MATCH_SCORE = Double.parseDouble(split[1]);
 						
 						else if (split[0].equals("FILE_LIBRARY"))
 							FILE_LIBRARY = split[1];

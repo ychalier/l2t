@@ -13,11 +13,12 @@ import scrapper.RedditAPI;
  *
  */
 public class Model {
+
+	private RedditAPI    api;
+	private Library      library;
+	private SearchEngine searchEngine;
 	
-	private final Library      library;
-	private final SearchEngine searchEngine;
-	
-	private RedditAPI api;
+	public Model() {}
 	
 	/**
 	 * The constructor requires a library.
@@ -49,6 +50,11 @@ public class Model {
 	
 	public void setApi(RedditAPI api) {
 		this.api = api;
+	}
+	
+	public void setLibrary(Library library) {
+		this.library = library;
+		this.searchEngine = new SearchEngine(library);
 	}
 	
 }

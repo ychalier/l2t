@@ -11,16 +11,7 @@ import java.util.Random;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import tools.Config;
-import tools.JSONHandler;
-import tools.Logger;
-import tools.Tools;
-import web.Model;
-import web.Router;
-import web.Server;
-import web.StaticEngine;
-import web.TemplateEngine;
-import web.View;
+import tools.*;
 
 /**
  * 
@@ -53,11 +44,9 @@ public class Authentifier {
 	private String     seed;
 	private JSONObject masterToken;
 	private JSONObject secondToken;
-	private Server     server;
-	private Thread	   thread;
 	
-	private boolean    newAuth = false;
-	
+	private final Object lock = new Object();
+		
 	/**
 	 * The code is stored as its validation is asynchronous.
 	 * @param api The Reddit API to link to.
@@ -67,9 +56,14 @@ public class Authentifier {
 		this.code = null;
 	}
 	
+	public Object getLock() {
+		return lock;
+	}
+	
+	/**
 	public Thread getThread() {
 		return thread;
-	}
+	}**/
 	
 	/**
 	 * Tries to refresh the token using the permanent token
@@ -81,12 +75,11 @@ public class Authentifier {
 	 * 
 	 * @throws Exception
 	 */
-	public void auth() throws Exception {
+	public boolean auth() throws Exception {
 		if (!new File(Config.FILE_TOKEN).exists())
 			if (code == null) {
-				newAuth = true;
-				retrieveCodeServerOut();
-				return;
+				// newAuth = true;
+				return retrieveCodeServerOut();
 			}
 			else
 				retrieveToken();
@@ -94,41 +87,7 @@ public class Authentifier {
 			loadToken();
 		refreshToken();
 		
-		// If there is no need to retrieve any token,
-		// then the wait page never was open. So
-		// we open it.
-		if (!newAuth) {
-			
-			thread =new Thread(new Runnable(){
-
-				@Override
-				public void run() {
-					
-					String url = "http://localhost:" + Config.PORT + "/wait";
-					
-					// Automatically opening the browser to allow user's click
-					Tools.openBrowser(url);
-					
-					// Creating dummy server parameters
-					Model model = new Model(null);
-					Router router = new Router(model);
-					
-					// Adding a view for the redirect_uri
-					try {
-						router.addView("^wait$", new View(
-								Server.TEMPLATES_DIR + "wait.html",
-								new StaticEngine()));
-						server = new Server(router);
-						server.run(false, true, false, false);
-					} catch (Exception e) {}
-					
-				}
-				
-			});
-			
-			thread.start();
-			
-		}
+		return false;
 		
 	}
 	
@@ -178,62 +137,17 @@ public class Authentifier {
 	 * @throws Exception
 	 * @see Server
 	 */
-	private void retrieveCodeServerOut() throws Exception {
+	private boolean retrieveCodeServerOut() throws Exception {
 		// Getting the url
 		URL url = getCodeRetrievalURL();
+		
 		// Printing it for manual verification
-		System.out.println(url);
-		Logger.wr("Code retrieval URL: " + url);
+		Logger.wrI("AUTHENTIFIER", "Code retrieval URL: " + url);
+		
 		// Automatically opening the browser to allow user's click
 		Tools.openBrowser(url.toString());
-		
-		// Creating dummy server parameters
-		Model model = new Model(null);
-		model.setApi(this.api); // Links to the API, necessary to execute
-								// the retrieveCodeServerIn method.
-		Router router = new Router(model);
-		
-		// Adding a view for the redirect_uri
-		router.addView("^authorize?$", new View(
-				Server.TEMPLATES_DIR + "wait.html",
-				new TemplateEngine() {
-
-					@Override
-					public String process(View view) {
-						
-						String[] query = view.getQuery();
-						String code = null;
-						String seed = null;
-						
-						// Getting code & state (seed)
-						for(int i=0; i<query.length; i++) {
-							String[] param = query[i].split("=");
-							if (param.length == 2 
-									&& param[0].equals("code"))
-								code = param[1];
-							if (param.length == 2 
-									&& param[0].equals("state"))
-								seed = param[1];
-						}
-						
-						if (code != null && seed != null)
-							try {
-								view
-								.getModel()
-								.getApi()
-								.getAuthentifier()
-								.retrieveCodeServerIn(code, seed);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						return view.getTemplate();
-					}
-			
-		}));
-		
-		// Creating and starting the server
-		server = new Server(router);
-		server.run(false, true, true, false);
+				
+		return true;
 	}
 	
 	/**
@@ -359,12 +273,13 @@ public class Authentifier {
 	 * @throws JSONException
 	 */
 	private void refreshToken() throws IOException, JSONException {
-		System.out.print("Refreshing token... ");
-		Logger.wr("Refreshing token...");
+		Logger.wrI("AUTHENTIFIER", "Refreshing token...");
 		secondToken = getTokenRetrievalResponse(
 				getAuthParametersRefresh());
-		System.out.println("Done.");
-		Logger.wr("Refreshing token done.");
+		synchronized (lock) {
+			lock.notify();				
+		}
+		Logger.wrI("AUTHENTIFIER", "Token refreshed");
 	}
 	
 	/**

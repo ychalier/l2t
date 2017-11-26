@@ -9,7 +9,6 @@ import java.net.SocketTimeoutException;
 
 import tools.Config;
 import tools.Logger;
-import tools.Tools;
 
 /**
  * 
@@ -30,12 +29,24 @@ public class Server  {
 	// Static files should be referred to from the root ("/")
 	// in a template file.
 	
-	private Router router;
+	private Router       router;
 	private ServerSocket server;
+	
+	private boolean      timeout = false;
 	
 	public Server(Router router) throws IOException {
 		this.router = router;
 		this.server = new ServerSocket(Config.PORT);
+	}
+	
+	
+	public Router getRouter() {
+		return router;
+	}
+	
+	
+	public Model getModel() {
+		return router.getModel();
 	}
 
 	/**
@@ -45,19 +56,12 @@ public class Server  {
 	 * @param oneTimeServer Should the server close after receiving a request
 	 * @throws Exception
 	 */
-	public void run(boolean browse, boolean unique, boolean verbose, boolean timeout) 
+	public void run() 
 			throws Exception {
 		
-		if (browse)
-			Tools.openBrowser("http://localhost:" + Config.PORT + "/");
-		
-		if (verbose)
-			System.out.println("Listening for connection on port " + Config.PORT + " ...");
-		
-	    Logger.wr("Listening for connection on port " + Config.PORT + " ...");
+	    Logger.wrI("SERVER", "Listening for connection on port " + Config.PORT + " ...");
 	    
-	    if (timeout)
-	    	server.setSoTimeout(10000);
+	    server.setSoTimeout(Config.SOCKET_TIMEOUT);
 	    
 	    while (true){
 	    	// Reading incoming requests
@@ -66,11 +70,9 @@ public class Server  {
 		    	BufferedReader reader = new BufferedReader(
 		    			new InputStreamReader(clientSocket.getInputStream())
 		    			);
-				String request = reader.readLine();	
-				if (verbose)
-					System.out.println(request);
-				if (!request.contains("pulse"))
-					Logger.wr(request);
+				String request = reader.readLine();
+				
+				Logger.wrI("SERVER", request);
 				
 				// Preparing response
 				String httpResponse = "HTTP/1.1 200 OK\r\n\r\n" 
@@ -81,12 +83,18 @@ public class Server  {
 							.write(httpResponse.getBytes("UTF-8"));
 				clientSocket.close();
 				
-				if (unique) break;
 	    	} catch (SocketTimeoutException e) {
-	    		break;
+	    		if (timeout) {
+	    			Logger.wrI("SERVER", "Socket timeout, closing");
+	    			break;
+	    		}
 	    	}
 	    }
 	    this.server.close();
+	}
+	
+	public void setTimeout(boolean timeout) {
+		this.timeout = timeout;
 	}
 	
 	/**

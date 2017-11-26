@@ -12,7 +12,7 @@ package web;
  * @author Yohan Chalier
  *
  */
-public interface TemplateEngine {
+public interface ViewEngine {
 	
 	public String process(View view);
 

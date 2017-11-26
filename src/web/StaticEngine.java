@@ -8,11 +8,11 @@ package web;
  * @author Yohan Chalier
  *
  */
-public class StaticEngine implements TemplateEngine {
+public class StaticEngine implements ViewEngine {
 
 	@Override
 	public String process(View view) {
-		return view.getTemplate();
+		return ((TemplateView) view).getTemplate();
 	}
 
 }

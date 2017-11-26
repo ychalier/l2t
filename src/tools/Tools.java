@@ -35,6 +35,7 @@ public class Tools {
 	 * @param url
 	 */
 	public static void openBrowser(String url) {
+		Logger.wrD("TOOLS", "Opening browser at URL: " + url);
 		try {
 			Runtime.getRuntime().exec("xdg-open " + url);
 		} catch (IOException e) {

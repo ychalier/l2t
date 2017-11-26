@@ -20,7 +20,7 @@ public class RedditAPI {
 	
 	// Default Reddit application parameters
 	public  static final String DEFAULT_CLIENT_ID    = "O4_S_-j1vdVw8Q";
-	public  static final String DEFAULT_REDIRECT_URI = "http://localhost:PORT/authorize";
+	public  static final String DEFAULT_REDIRECT_URI = "http://localhost:8080/authorize";
 
 	private static final String URL_JSON  = "https://oauth.reddit.com/r/SUBREDDIT/new.json?limit=LIMIT&after=AFTER";
 	private static final int    MAX_LIMIT = 100;
@@ -42,6 +42,11 @@ public class RedditAPI {
 		authentifier = new Authentifier(this);
 	}
 	
+	public RedditAPI() 
+			throws IOException, JSONException {
+		this(DEFAULT_CLIENT_ID, DEFAULT_REDIRECT_URI);
+	}
+	
 	public String getClientId() {
 		return client_id;
 	}
@@ -59,8 +64,8 @@ public class RedditAPI {
 	 * @throws Exception
 	 * @see Authentifier
 	 */
-	public void auth() throws Exception {
-		this.authentifier.auth();
+	public boolean auth() throws Exception {
+		return this.authentifier.auth();
 	}
 	
 	/**
@@ -136,8 +141,7 @@ public class RedditAPI {
 		// All those array will then be concatenate
 		JSONArray[] posts = new JSONArray[nIterations];
 		
-		System.out.print("Fetching Reddit posts...");
-		Logger.wr("Fetching Reddit posts...");
+		Logger.wrI("REDDIT API", "Fetching Reddit posts");
 		
 		for (int i = 0; i < nIterations; i++) {
 			// Wether we want all posts from the page or not
@@ -155,11 +159,12 @@ public class RedditAPI {
 			try {
 				after = container.getString("after");
 			} catch (org.json.JSONException e) {
+				Logger.wrW("REDDIT API", "Error fetching Reddit JSON: " + e.getMessage());
 				break;
 			}
 		}
-		System.out.println(" Done.");
-		Logger.wr("Fetching Reddit posts done.");
+		
+		Logger.wrI("REDDIT API", "Fetching Reddit posts done.");
 		
 		// Finally concatenate all sub-arrays
 		return concatArray(posts);
