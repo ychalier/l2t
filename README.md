@@ -57,7 +57,9 @@ See the file `.config` for an example
 parameter | default | description
 --------- | --------- | -----------
 `PORT` | 8080 | The port to open the local server on. Do not change unless you already have a library file to load.
+`SOCKET_TIMEOUT` | 10000 | Server timeout, in milliseconds, applied once the library is built.
 `FETCH_AMOUNT` | 999 | The number of posts to fetch on the subreddit.
+`REFRESH_AMOUNT` | 100 | The number of posts to fetch when refreshing the library.
 `WEIGHT_FAME` | 2 | Importance of fame score in global song score
 `WEIGHT_QUALITY` | 1 | Importance of quality score in global song score
 `MATCH_SCORE_MAIN` | 3 | Importance of main genre noun match in match score
@@ -109,8 +111,7 @@ at the beginning to retrieve it, that's all.
 #### Library building
 
 Then a library is built by the program. By default, it is stored in `library.json`. The amount of data stored is set by the `FETCH_AMOUNT` parameter in the config file.
-The library does not update itself. So if you want to refresh it, just delete the file and a new one will be generated.
-
+The library does update itself, but only to fetch new posts on Reddit. So if you want to fully refresh it (including YouTube statistics for example), just delete the file and a new one will be generated.
 
 ## development
 

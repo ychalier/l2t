@@ -31,7 +31,7 @@ public class Main {
 			else if ((args[i].equals("-h") || args[i].equals("--help"))) {
 				System.out.println("usage: java -jar [jarfile] [options]\n"
 						+ "Options and arguments:\n"
-						+ "-c --config [FILENAME] : load a config file\n"
+						+ "-c --config [filename] : load a config file\n"
 						+ "-l --log               : activate the logger (logfile set in config)\n"
 						+ "-h --help              : show this message");
 				return ;
