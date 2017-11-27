@@ -151,6 +151,39 @@ public class DefaultRouter extends Router {
 			)
 		);
 		
+		// Likes page
+		Logger.wrD("ROUTER", "Creating view: likes page");
+		addView("^likes\\/?$",
+				new TemplateView(Server.TEMPLATES_DIR + "likes.html",
+				new ViewEngine() {
+					
+					@Override
+					public String process(View view) {
+						StringBuilder builder = new StringBuilder();
+						
+						for (String key: view.getModel().getLibrary().getSongs().keySet()) {
+							if (view.getModel().getLibrary().getLikes().contains(key)) {
+								Song song = view.getModel().getLibrary().getSongs().get(key);
+								builder.append("<tr>"
+										+ "<td>" + song.id + "</td>"
+										+ "<td>" + song.artist + "</td>"
+										+ "<td>" + song.title + "</td>"
+										+ "<td>" + song.toStringGenres() + "</td>"
+										+ "<td>" + song.domain + "</td>"
+										+ "<td><a href=\"" + song.url + "\"> " + song.url + "</a></td>"
+										+ "<td>" + song.fame + "</td>"
+										+ "<td>" + song.quality + "</td>"
+										+ "</tr>");
+							}
+						}
+						String response = ((TemplateView) view).getTemplate()
+								.replace("PLACEHOLDER", builder.toString());
+						return response;
+					}
+				}
+			)
+		);
+		
 		// Not a real view, used to answer when
 		// the wait page asks for an answer.
 		addView("^ask$", 

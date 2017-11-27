@@ -63,7 +63,7 @@ public final class LibraryThread extends Thread {
 			
 		} catch (Exception e) {
 			Logger.wrE("LIBRARY THREAD", "Error: " + e.toString());
-			serverThread.interrupt();
+			serverThread.interrupt();			
 		}
 	}
 

@@ -99,6 +99,11 @@ public class Library {
 		return songs;
 	}
 	
+	
+	public Set<String> getLikes(){
+		return likes;
+	}
+	
 	/**
 	 * format:
 	 * 001: Artist - Title [Genre] (Fame score/Quality score)
