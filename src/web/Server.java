@@ -90,7 +90,9 @@ public class Server  {
 	    		}
 	    	}
 	    }
-	    this.server.close();
+	    // Saving library for likes
+	    getModel().getLibrary().save();
+	    server.close();
 	}
 	
 	public void setTimeout(boolean timeout) {

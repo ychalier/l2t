@@ -245,6 +245,24 @@ $("#song-play").click(function(event){
   }
 });
 
+function httpGetAsync(id){
+	var url = "http://localhost:8080/like?id=" + id;
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() { 
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+        	if (xmlHttp.responseText == "ACK"){
+        		alert("Song successfully saved!");
+        	}
+        }
+    }
+    xmlHttp.open("GET", url, true);
+    xmlHttp.send(null);
+}
+
+$("#like-btn").click(function(){
+	httpGetAsync(data[index-1][5]);
+});
+
 /* =====================================================================
  *                      SCRIPT BEGINNING
  * =====================================================================

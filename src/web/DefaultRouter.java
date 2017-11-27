@@ -97,7 +97,8 @@ public class DefaultRouter extends Router {
 							builder.append(
 									  "\"" + song.artist.replace((char) 34, '\'') + "\", "
 									+ "\"" + song.title.replace((char) 34, '\'') + "\","
-									+ "\"" + song.thumbnail + "\""
+									+ "\"" + song.thumbnail + "\","
+									+ "\"" + song.id + "\""
 								    + "],");
 						}
 						
@@ -164,6 +165,23 @@ public class DefaultRouter extends Router {
 				}
 			)
 		);
+		
+		addView("^like$", new View(new ViewEngine() {
+
+			@Override
+			public String process(View view) {
+				String[] query = view.getQuery();
+				if (query.length == 1) {
+					String[] split = query[0].split("=");
+					if (split.length == 2 && split[0].equals("id")) {
+						view.getModel().getLibrary().like(split[1]);
+						return "ACK";
+					}
+				}
+				return "NO";
+			}
+			
+		}));
 		
 		// Authorizing view
 		Logger.wrD("ROUTER", "Creating view: authorize page");

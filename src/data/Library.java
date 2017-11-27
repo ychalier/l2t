@@ -3,7 +3,9 @@ package data;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,7 +25,14 @@ import tools.Logger;
 public class Library {
 			
 	private Map<String, Song> songs;
+	private Set<String>       likes;
 	private Jury jury;
+	
+	public Library() {
+		songs = new HashMap<String, Song>();
+		likes = new HashSet<String>();
+		jury  = new Jury(this);
+	}
 	
 	/**
 	 * Builds a Library from a list of Reddit posts.
@@ -35,10 +44,10 @@ public class Library {
 	 */
 	public Library(JSONArray posts) {
 		
+		this();
+		
 		Logger.wrI("LIBRARY", "Building library from posts");
-		
-		songs = new HashMap<String, Song>();
-		
+				
 		for(int i=0; i<posts.length(); i++) {
 			
 			try {
@@ -54,8 +63,6 @@ public class Library {
 				
 		}
 		
-		jury = new Jury(this);
-
 		Logger.wrI("LIBRARY", "Library built");
 	}
 	
@@ -67,47 +74,27 @@ public class Library {
 	 * @throws IOException
 	 */
 	public Library(File file) throws JSONException, IOException {
-		Logger.wrI("LIBRARY", "Building library from JSON");
-		songs = new HashMap<String, Song>();
 		
-		JSONArray array = JSONHandler.load(file).getJSONArray("list");
+		this();
+		
+		Logger.wrI("LIBRARY", "Building library from JSON");
+		
+		JSONObject json = JSONHandler.load(file);
+		
+		JSONArray array = json.getJSONArray("list");
 		for(int i = 0; i < array.length(); i++) {
 			Song tmp = new Song(array.getJSONObject(i));
 			songs.put(tmp.id, tmp);
 		}
+		array = json.getJSONArray("likes");
+		for(int i = 0; i < array.length(); i++) {
+			likes.add(array.getString(i));
+		}
 		
-		jury = new Jury(this);
 		Logger.wrI("LIBRARY", "Library built");
 	}
 	
 	
-	public void append(JSONArray posts) {
-		
-		Logger.wrI("LIBRARY", "Refreshing library");
-		
-		for(int i=0; i<posts.length(); i++) {
-			
-			try {
-				try {
-					PostSong tmp = new PostSong(posts.getJSONObject(i).getJSONObject("data"));
-					if (!songs.containsKey(tmp.id))
-						songs.put(tmp.id, tmp);
-				} catch (JSONException e) {
-					throw new SongException("invalid post json");
-				}
-			} catch (SongException e) {
-				Logger.wrW("LIBRARY", e.toString());
-			}
-				
-		}
-		
-		jury = new Jury(this);
-
-		Logger.wrI("LIBRARY", "Library refreshed");
-		
-	}
-	
-
 	public Map<String, Song> getSongs(){
 		return songs;
 	}
@@ -142,12 +129,51 @@ public class Library {
 	 * @throws JSONException
 	 */
 	public JSONObject toJSON() throws JSONException {
+		
+		// Adding songs
 		JSONArray array = new JSONArray();
 		for(String key : songs.keySet())
 			array.put(songs.get(key).toJSON());
 		JSONObject json = new JSONObject();
 		json.put("list", array);
+		
+		// Adding likes
+		array = new JSONArray();
+		for(String id: likes)
+			array.put(id);
+		json.put("likes", array);
+		
 		return json;
+	}
+	
+	
+	public void like(String songId) {
+		likes.add(songId);
+	}
+	
+	
+	public void append(JSONArray posts) {
+		
+		Logger.wrI("LIBRARY", "Refreshing library");
+		
+		for(int i=0; i<posts.length(); i++) {
+			
+			try {
+				try {
+					PostSong tmp = new PostSong(posts.getJSONObject(i).getJSONObject("data"));
+					if (!songs.containsKey(tmp.id))
+						songs.put(tmp.id, tmp);
+				} catch (JSONException e) {
+					throw new SongException("invalid post json");
+				}
+			} catch (SongException e) {
+				Logger.wrW("LIBRARY", e.toString());
+			}
+				
+		}
+		
+		Logger.wrI("LIBRARY", "Library refreshed");
+		
 	}
 	
 	
