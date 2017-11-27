@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import tools.Logger;
 import tools.Regex;
 
 /**
@@ -28,6 +29,33 @@ public class Router {
 	public Router(Model model) {
 		this.model = model;
 		map = new HashMap<String, View>();
+		
+		Logger.wrD("ROUTER", "Creating view: static");
+		try {
+			addView("^" + Server.STATIC_DIR + ".+", new View(new ViewEngine() {
+
+				@Override
+				public String process(View view) {
+					List<String> hierarchy = view.getHierarchy();
+					StringBuilder url = new StringBuilder();
+					for (String part: hierarchy)
+						url.append(part + "/");
+					String filename = url.subSequence(0, url.length()-1).toString();
+					try {
+						return new TemplateView("/" + filename, new StaticEngine()).getTemplate();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					return "";
+				}
+				
+			}));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public Model getModel() {
@@ -65,6 +93,7 @@ public class Router {
 		if (split.length >= 2) query = split[1].split("&");
 		
 		// Handling static file
+		/*
 		int index = url.lastIndexOf('.'); // Seek file extension index
 		if (index != -1) {
 			String extension = url.substring(index); // Get the file extension
@@ -82,7 +111,7 @@ public class Router {
 				}
 				
 			}
-		}
+		}*/
 		
 		List<String> hierarchy;
 		View view;

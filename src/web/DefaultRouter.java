@@ -211,6 +211,7 @@ public class DefaultRouter extends Router {
 		addView("^wait$", new TemplateView(
 				Server.TEMPLATES_DIR + "wait.html",
 				new StaticEngine()));
+		
 	}
 	
 	

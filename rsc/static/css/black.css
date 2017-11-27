@@ -1,0 +1,34 @@
+body {
+	background: #000;
+	color: #FFF;
+}
+
+h1 {
+	color: #FFF;
+}
+
+.title span {
+	text-shadow: #FFF 1px 1px, #FFF 2px 2px, #FFF 3px 3px, #FFF 4px 4px, #FFF 5px 5px, #FFF 6px 6px;
+	color: #000;
+}
+
+.title:nth-child(1) {
+	color: #000;
+}
+.title:nth-child(2) {
+	color: #000;
+}
+.title:nth-child(3) {
+	color: #000;
+}
+
+.box{
+	color: #000;
+	background: #FFF;
+	box-shadow: #AAA 4px 4px;
+}
+
+.box-content{
+	color: #FFF;
+	background: #000;
+}

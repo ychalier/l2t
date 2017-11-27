@@ -23,7 +23,7 @@ public class Server  {
 	public static final String TEMPLATES_DIR = "/templates/";
 	
 	// The folder containing the static files
-	public static final String STATIC_DIR    = "/static/";
+	public static final String STATIC_DIR    = "static/";
 	// Static files types supported
 	public static final String STATIC_FILES  = "(.css|.js)";
 	// Static files should be referred to from the root ("/")
