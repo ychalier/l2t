@@ -79,7 +79,7 @@ public class Router {
 	 * the regular expressions.
 	 * 
 	 * @param request The GET request
-	 * @return The view corresponding
+	 * @return The view corresponding, null if not found (404)
 	 * @throws IOException
 	 */
 	public View findView(String request)  {
@@ -92,27 +92,7 @@ public class Router {
 		String[] query = null;
 		if (split.length >= 2) query = split[1].split("&");
 		
-		// Handling static file
-		/*
-		int index = url.lastIndexOf('.'); // Seek file extension index
-		if (index != -1) {
-			String extension = url.substring(index); // Get the file extension
-			if (extension.matches(Server.STATIC_FILES)) { // If it is supported
-				
-				// Uses a StaticEngine to ease programming
-				TemplateView view = null;
-				try {
-					view = new  TemplateView(
-							Server.STATIC_DIR + url,
-							new StaticEngine());
-					return view;
-				} catch (IOException | NullPointerException e) {
-					return null;
-				}
-				
-			}
-		}*/
-		
+		// Checking all views to find one corresponding.
 		List<String> hierarchy;
 		View view;
 		for(String pattern : map.keySet()) {

@@ -151,12 +151,22 @@ public class Library {
 		return json;
 	}
 	
-	
+	/**
+	 * Adds a songs the the liked songs
+	 * 
+	 * @param songId The Reddit id corresponding to the song
+	 */
 	public void like(String songId) {
 		likes.add(songId);
 	}
 	
 	
+	/**
+	 * Appends posts to the already existing library.
+	 * Only adds those that does not exists yet.
+	 * 
+	 * @param posts An array of Reddit posts
+	 */
 	public void append(JSONArray posts) {
 		
 		Logger.wrI("LIBRARY", "Refreshing library");
@@ -181,14 +191,29 @@ public class Library {
 		
 	}
 	
-	
-	public void save() throws IOException, JSONException {
+	/**
+	 * Saves the library to the default JSON file
+	 * 
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public void save() {
 		save(Config.FILE_LIBRARY);
 	}
 	
-	
-	public void save(String filename) throws IOException, JSONException {
-		JSONHandler.save(toJSON(), filename);
+	/**
+	 * Saves the library into a file as a JSON
+	 * 
+	 * @param filename
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public void save(String filename){
+		try {
+			JSONHandler.save(toJSON(), filename);
+		} catch (Exception e) {
+			Logger.wrE("LIBRARY", "Error while saving library: " + e.toString());
+		}
 	}
 	
 	/**

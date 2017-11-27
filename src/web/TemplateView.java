@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
  * Implements the view from the MVC schema.
  * 
  * Uses a template to structure the response.
- * Uses a TemplateEngine to process this template
+ * Uses a ViewEngine to process this template
  * with regards to the model.
  * 
  * @author Yohan Chalier

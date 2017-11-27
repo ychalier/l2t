@@ -3,6 +3,16 @@ package web;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * 
+ * Implements the view from the MVC schema.
+ * 
+ * Uses a ViewEngine to process the request
+ * and return a response.
+ * 
+ * @author Yohan Chalier
+ *
+ */
 public class View {
 	
 	private final ViewEngine     engine;
@@ -43,12 +53,12 @@ public class View {
 	}
 	
 	/**
-	 * Calls the TemplateEngine to process the template.
+	 * Calls the ViewEngine to process the template.
 	 * 
 	 * @return The HTTP response given by the view
 	 * @throws IOException
 	 */
-	public String getResponse() throws IOException {
+	public String getResponse() {
 		return engine.process(this);
 	}
 

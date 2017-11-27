@@ -10,6 +10,13 @@ import web.Model;
 import web.Router;
 import web.Server;
 
+/**
+ * 
+ * A thread to host the local HTTP server
+ * 
+ * @author Yohan Chalier
+ *
+ */
 public final class ServerThread extends Thread {
 	
 	private Server server;
@@ -25,15 +32,12 @@ public final class ServerThread extends Thread {
 		Router router = null;
 		try {
 			router = new DefaultRouter(model);
-		} catch (IOException e) {
-			Logger.wrE("SERVER THREAD", "Error while parsing templates: " + e.toString());
-		}
-		
-		try {
+			
 			server = new Server(router);
 			server.run();
-		} catch (Exception e) {
-			Logger.wrE("SERVER THREAD", "Error: " + e.toString());
+			
+		} catch (IOException e) {
+			Logger.wrE("SERVER THREAD", "Error while creating router: " + e.toString());
 		}
 		
 	}

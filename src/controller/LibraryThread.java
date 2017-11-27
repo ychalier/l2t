@@ -9,8 +9,19 @@ import tools.JSONHandler;
 import tools.Logger;
 import tools.Tools;
 
+/**
+ * 
+ * A thread to handle the library creation
+ * 
+ * @author Yohan Chalier
+ *
+ */
 public final class LibraryThread extends Thread {
 	
+	/**
+	 * Needs a reference to the other thread to
+	 * send it informations.
+	 */
 	private final ServerThread serverThread;
 	
 	private RedditAPI api;

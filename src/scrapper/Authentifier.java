@@ -129,10 +129,11 @@ public class Authentifier {
 	/**
 	 * Asks Reddit for a verification code.
 	 * 
-	 * First, it generates the URL to retrieve the code from.
-	 * Then, it starts a small socket server and waits for
-	 * the redirect URI from the Reddit application.
-	 * When the request is detected, the server closes.
+	 * Generates the URL to retrieve the code from,
+	 * and opens URL.
+	 * 
+	 * The server thread should handle the
+	 * response from Reddit online API.
 	 * 
 	 * @throws Exception
 	 * @see Server
@@ -155,7 +156,7 @@ public class Authentifier {
 	 * when the redirect_uri request happens.
 	 * 
 	 * The auth() method previously called that executed
-	 * retrieveCodeServerOut ends when the server closes.
+	 * retrieveCodeServerOut has ended.
 	 * 
 	 * So now that we have the code, we need to re-start
 	 * it to retrieve the token (only if the seed matches)

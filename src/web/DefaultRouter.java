@@ -10,6 +10,19 @@ import data.Song;
 import scrapper.YouTubeAPI;
 import tools.Logger;
 
+/**
+ * 
+ * This class creates a router with already
+ * implemented views.
+ * 
+ * All the views are those required for the program,
+ * it eases the implementation mostly.
+ * 
+ * So it is basically a container.
+ * 
+ * @author Yohan Chalier
+ *
+ */
 public class DefaultRouter extends Router {
 
 	public DefaultRouter(Model model) throws IOException {

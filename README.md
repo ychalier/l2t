@@ -42,6 +42,7 @@ If you're using the jar file, you can use it by double-clicking in a graphic int
  `-h`   | `--help`   |          | display this help menu   
  `-l`   | `--log`    |          | activate the logger
  `-c`   | `--config` | filename | load a given config file
+ `-p`   | `--priority` | int | log priority level: verbose (0), debug (1), information (2), warning (3), error (4)
 
 
 See below for more info about the logger and the config file.
@@ -59,7 +60,7 @@ parameter | default | description
 `PORT` | 8080 | The port to open the local server on. Do not change unless you already have a library file to load.
 `SOCKET_TIMEOUT` | 10000 | Server timeout, in milliseconds, applied once the library is built.
 `FETCH_AMOUNT` | 999 | The number of posts to fetch on the subreddit.
-`REFRESH_AMOUNT` | 100 | The number of posts to fetch when refreshing the library.
+`REFRESH_AMOUNT` | 50 | The number of posts to fetch when refreshing the library.
 `WEIGHT_FAME` | 2 | Importance of fame score in global song score
 `WEIGHT_QUALITY` | 1 | Importance of quality score in global song score
 `MATCH_SCORE_MAIN` | 3 | Importance of main genre noun match in match score
@@ -74,9 +75,7 @@ parameter | default | description
 
 ### logger
 
-The logger saves the output of the program (the differents steps, request handled) and most importantly the SongExcpetion raised when the loaded could not
-handle a song when adding to the library. Its purpose was mainly to understand why some songs could not be appended. It is not a proper debug log.
-Therefore, if you encounter a bug, you can report the stack trace you got from the terminal.
+The logger saves the output of the program (the differents steps, request handled) and most importantly the exception raised when a problem is encounted (warning if not big of a deal, error otherwise). When reporting a bug, it is nice to provide the log alongside to help understanding what happened.
 
 ## usage
 
@@ -87,6 +86,7 @@ The interface consists of a small website. The sitemap is the following:
 	/		            landing page, with the search bar
 	    /wait	            waiting page, when the library's loading
 	    /library		    a display of all the database
+	    /likes           list of songs you saved
 	    /search/(query)	    playlist page
 	    /search/(query)?rand    playlist page with the songs shuffled
 

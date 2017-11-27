@@ -25,7 +25,7 @@ public class Config {
 	public static int    SOCKET_TIMEOUT     = 10000;
 	
 	public static int    FETCH_AMOUNT       = 999;
-	public static int    REFRESH_AMOUNT     = 100;
+	public static int    REFRESH_AMOUNT     = 50;
 
 	public static int    WEIGHT_FAME        = 2;
 	public static int    WEIGHT_QUALITY     = 1;
@@ -50,9 +50,9 @@ public class Config {
 		correspondences.put("rnb", Arrays.asList(new String[] {"r&b"}));
 		correspondences.put("rock&roll", Arrays.asList(new String[] {"rock'n'roll"}));
 		correspondences.put("electro", Arrays.asList(new String[] {"electronica", "electronic", "electonic"}));
-		correspondences.put("psychedelic", Arrays.asList(new String[] {"psych"}));
-		correspondences.put("alternative", Arrays.asList(new String[] {"alt"}));
-		correspondences.put("acapella", Arrays.asList(new String[] {"cappella"}));
+		correspondences.put("psych", Arrays.asList(new String[] {"psychedelic"}));
+		correspondences.put("alt", Arrays.asList(new String[] {"alternative"}));
+		correspondences.put("cappella", Arrays.asList(new String[] {"acappella"}));
 		correspondences.put("chill", Arrays.asList(new String[] {"chillout", "chillwave", "downtempo", "ambient"}));
 		correspondences.put("pop electro", Arrays.asList(new String[] {"electopop", "electropop"}));
 		correspondences.put("punk electro", Arrays.asList(new String[] {"electropunk"}));

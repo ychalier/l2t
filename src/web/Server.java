@@ -3,9 +3,13 @@ package web;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
+
+import org.json.JSONException;
 
 import tools.Config;
 import tools.Logger;
@@ -51,27 +55,32 @@ public class Server  {
 
 	/**
 	 * Starts the server.
+	 * @throws IOException 
+	 * @throws UnsupportedEncodingException 
+	 * @throws JSONException 
 	 * 
-	 * @param openBrowser Should the browser be open with a local URL at start
-	 * @param oneTimeServer Should the server close after receiving a request
 	 * @throws Exception
 	 */
-	public void run() 
-			throws Exception {
+	public void run() {
 		
 	    Logger.wrI("SERVER", "Listening for connection on port " + Config.PORT + " ...");
 	    
-	    server.setSoTimeout(Config.SOCKET_TIMEOUT);
+	    try {
+			server.setSoTimeout(Config.SOCKET_TIMEOUT);
+		} catch (SocketException e) {
+			Logger.wrE("SERVER", "Error setting timeout: " + e.toString());
+		}
 	    
 	    while (true){
 	    	// Reading incoming requests
 	    	try {
-	    		Socket clientSocket = server.accept();
-		    	BufferedReader reader = new BufferedReader(
+	    		Socket clientSocket;
+				
+				clientSocket = server.accept();
+				BufferedReader reader = new BufferedReader(
 		    			new InputStreamReader(clientSocket.getInputStream())
 		    			);
 				String request = reader.readLine();
-				
 				Logger.wrI("SERVER", request);
 				
 				// Preparing response
@@ -88,11 +97,17 @@ public class Server  {
 	    			Logger.wrI("SERVER", "Socket timeout, closing");
 	    			break;
 	    		}
+	    	} catch (IOException e) {
+	    		Logger.wrE("SERVER", "Error reading or writing request: " + e.toString());
 	    	}
 	    }
 	    // Saving library for likes
 	    getModel().getLibrary().save();
-	    server.close();
+	    try {
+			server.close();
+		} catch (IOException e) {
+			Logger.wrE("SERVER", "Error closing server: " + e.toString());
+		}
 	}
 	
 	public void setTimeout(boolean timeout) {
