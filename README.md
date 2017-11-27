@@ -86,7 +86,7 @@ The interface consists of a small website. The sitemap is the following:
 	/		            landing page, with the search bar
 	    /wait	            waiting page, when the library's loading
 	    /library		    a display of all the database
-	    /likes           list of songs you saved
+	    /likes                  list of songs you saved
 	    /search/(query)	    playlist page
 	    /search/(query)?rand    playlist page with the songs shuffled
 
