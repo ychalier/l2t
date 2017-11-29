@@ -43,6 +43,7 @@ If you're using the jar file, you can use it by double-clicking in a graphic int
  `-l`   | `--log`    |          | activate the logger
  `-c`   | `--config` | filename | load a given config file
  `-p`   | `--priority` | int | log priority level: verbose (0), debug (1), information (2), warning (3), error (4)
+ `-t`   | `--timeout` | int | the server timeout (in seconds). _Warning: if you then load a config file with a new `SOCKET_TIMEOUT`, the config file wins!_
 
 
 See below for more info about the logger and the config file.

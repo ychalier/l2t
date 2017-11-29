@@ -23,6 +23,7 @@ public class Main {
 	 * 		  -l  --log             Activate the logger (into file .log)
 	 *        -c  --config   [path] Loads a config file
 	 *        -p  --priority [int]  Log priority level (0-4)
+	 *        -t  --timeout  [int]  Set the timeout (in seconds)
 	 */
 	public static void main(String[] args) {
 		
@@ -42,11 +43,16 @@ public class Main {
 				priority = Integer.parseInt(args[i+1]);
 				i++;
 			}
+			else if ((args[i].equals("-t") || args[i].equals("--timeout")) && i < args.length-1) {
+				Config.SOCKET_TIMEOUT = 1000 * Integer.parseInt(args[i+1]);
+				i++;
+			}
 			else if ((args[i].equals("-h") || args[i].equals("--help"))) {
 				System.out.println("usage: java -jar [jarfile] [options]\n"
 						+ "Options and arguments:\n"
 						+ "-c --config   [filename] : load a config file\n"
 						+ "-p --priority [int]      : log prioriry level (0-4)\n"
+						+ "-t --timeout  [int]      : set the timeout (in seconds)\n"
 						+ "-l --log                 : activate the logger (logfile set in config)\n"
 						+ "-h --help                : show this message");
 				return ;
