@@ -1,10 +1,13 @@
 package controller;
 
 import java.io.IOException;
+import java.net.BindException;
 
 import data.Library;
 import scrapper.RedditAPI;
+import tools.Config;
 import tools.Logger;
+import tools.Tools;
 import web.DefaultRouter;
 import web.Model;
 import web.Router;
@@ -20,6 +23,7 @@ import web.Server;
 public final class ServerThread extends Thread {
 	
 	private Server server;
+	private boolean alreadyStarted = false;
 	
 	public ServerThread() {
 		super();
@@ -35,11 +39,18 @@ public final class ServerThread extends Thread {
 			
 			server = new Server(router);
 			server.run();
-			
+		} catch (BindException e) {
+			Logger.wrW("SERVER THREAD", "Could not bind server to port " + Config.PORT);
+			alreadyStarted = true;
+			Tools.openBrowser("http://localhost:8080/wait");
 		} catch (IOException e) {
 			Logger.wrE("SERVER THREAD", "Error while creating router: " + e.toString());
 		}
 		
+	}
+	
+	public boolean wasAlreadyStarted() {
+		return alreadyStarted;
 	}
 	
 	public void setLibrary(Library library) {

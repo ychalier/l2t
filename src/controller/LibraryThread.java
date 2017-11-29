@@ -53,6 +53,8 @@ public final class LibraryThread extends Thread {
 				Logger.wrD("LIBRARY THREAD", "Successfully synchronized token");
 			}
 			
+			if (serverThread.wasAlreadyStarted()) return;
+			
 			// If the browser has not been opened, opens it
 			if (!browserOpened)
 				Tools.openBrowser("http://localhost:8080/wait");
