@@ -81,7 +81,11 @@ public class Server  {
 		    			new InputStreamReader(clientSocket.getInputStream())
 		    			);
 				String request = reader.readLine();
-				Logger.wrI("SERVER", request);
+				
+				if (request.contains("ask") || request.contains("pulse"))
+					Logger.wrV("SERVER", request);
+				else
+					Logger.wrI("SERVER", request);
 				
 				// Preparing response
 				String httpResponse = "HTTP/1.1 200 OK\r\n\r\n" 

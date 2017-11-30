@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import data.Song;
 import data.SongException;
+import tools.Config;
 import tools.Regex;
 
 /**
@@ -25,8 +26,7 @@ import tools.Regex;
  */
 public class YouTubeAPI {
 	
-	private static final String API_KEY = "AIzaSyBiqiUxUCFWuMMVtAvfgWsgv5ezEv8WHIg";
-	private static final String API_URL = "https://www.googleapis.com/youtube/v3/videos?part=statistics&id=VIDEO_ID&key=" + API_KEY;
+	private static final String API_URL = "https://www.googleapis.com/youtube/v3/videos?part=statistics&id=VIDEO_ID&key=API_KEY";
 	
 	/**
 	 * Returns the YouTube statistics of a song
@@ -49,7 +49,11 @@ public class YouTubeAPI {
 		// Getting response from YouTube
 		String response;
 		try {
-			response = new Connection(API_URL.replace("VIDEO_ID", videoId)).getResponse();
+			response = new Connection(
+					API_URL
+					.replace("VIDEO_ID", videoId)
+					.replace("API_KEY", Config.GOOGLE_API_KEY))
+					.getResponse();
 		} catch (IOException e1) {
 			throw new SongException("unable to establish connection to youtube: " + song.url);
 		}

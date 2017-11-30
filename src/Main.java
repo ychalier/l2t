@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.IOException;
 
 import controller.Controller;
 import tools.Config;
@@ -24,8 +25,9 @@ public class Main {
 	 *        -c  --config   [path] Loads a config file
 	 *        -p  --priority [int]  Log priority level (0-4)
 	 *        -t  --timeout  [int]  Set the timeout (in seconds)
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		
 		// Reading arguments
 		boolean log = false;
@@ -71,6 +73,9 @@ public class Main {
 		} else {
 			Logger.wrI("MAIN", "No config file specified. Using default values.");
 		}
+		
+		// Loading API keys
+		Config.loadKeys("/.keys");
 		
 		// Initialize logger
 		new Logger(log, priority);

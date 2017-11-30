@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +44,10 @@ public class Config {
 	
 	public static String USER_AGENT         = "Mozilla/5.0";
 	
+	public static String REDDIT_CLIENT_ID;
+	public static String REDDIT_REDIRECT_URI;
+	public static String GOOGLE_API_KEY;
+	
 	public static Map<String, List<String>> correspondences;
 	static {
 		correspondences = new HashMap<String, List<String>>();
@@ -60,6 +66,22 @@ public class Config {
 		correspondences.put("edm", Arrays.asList(new String[] {"idm"}));
 		correspondences.put("indie", Arrays.asList(new String[] {"indi"}));
 		correspondences.put("jazz", Arrays.asList(new String[] {"jazzhop"}));
+	}
+	
+	public static void loadKeys(String filename) throws IOException {
+		InputStreamReader reader = new InputStreamReader(
+				Config.class.getClass().getResourceAsStream(filename),
+				StandardCharsets.UTF_8);
+		int c;
+		StringBuilder builder = new StringBuilder();
+		while ((c = reader.read()) != -1) builder.append((char) c);
+		reader.close();
+		
+		String[] lines = builder.toString().split("\n");
+		REDDIT_CLIENT_ID    = lines[0];
+		REDDIT_REDIRECT_URI = lines[1];
+		GOOGLE_API_KEY      = lines[2];
+		
 	}
 	
 	public static void load(File configFile) {

@@ -12,3 +12,6 @@
 
 # Bin folder
 bin/
+
+# Keys files
+.keys
